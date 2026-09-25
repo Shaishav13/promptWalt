@@ -96,12 +96,12 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
       <DialogTrigger className="cursor-pointer group relative overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 hover:ring-2 hover:ring-primary/50 transition-all text-left block w-full">
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-zinc-950 border-0 shadow-2xl">
-        <div className="flex flex-col md:flex-row h-[80vh] md:h-[600px]">
+      <DialogContent className="max-w-4xl p-0 md:overflow-hidden overflow-y-auto max-h-[90vh] bg-white dark:bg-zinc-950 border-0 shadow-2xl flex flex-col">
+        <div className="flex flex-col md:flex-row md:h-[600px]">
           {/* Image Section */}
-          <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative">
+          <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0">
             {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
-              <ScrollArea className="w-full h-full">
+              <ScrollArea className="w-full h-full absolute inset-0">
                 <div className="flex flex-col">
                   {prompt.signedUrls.map((url, i) => (
                     // eslint-disable-next-line @next/next/no-img-element

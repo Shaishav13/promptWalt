@@ -40,8 +40,8 @@ export function NewCategoryDialog() {
       <DialogTrigger className="inline-flex items-center justify-center rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 h-6 w-6 shrink-0 transition-colors focus-visible:outline-none text-zinc-500">
         <Plus className="h-4 w-4" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px]">
-        <form onSubmit={handleSubmit}>
+      <DialogContent className="sm:max-w-[400px] max-h-[90vh] overflow-y-auto flex flex-col">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-0">
           <DialogHeader>
             <DialogTitle>New Category</DialogTitle>
           </DialogHeader>

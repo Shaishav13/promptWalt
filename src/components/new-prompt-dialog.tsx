@@ -57,9 +57,9 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
         <Plus className="h-4 w-4" />
         <span className="hidden sm:inline">New Prompt</span>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto flex flex-col">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-0">
+          <DialogHeader className="shrink-0">
             <DialogTitle>Add New Prompt</DialogTitle>
             <DialogDescription>
               Save a new prompt to your library. We'll automatically generate a title for you.
