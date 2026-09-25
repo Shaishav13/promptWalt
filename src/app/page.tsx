@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search, Plus, Menu, LogOut, Hexagon, User } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { ScrollArea } from '@/components/ui/scroll-area'
+
 import { NewPromptDialog } from '@/components/new-prompt-dialog'
 import { PromptDetailDialog } from '@/components/prompt-detail-dialog'
 import { NewCategoryDialog } from '@/components/new-category-dialog'
@@ -13,9 +13,10 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { Filters } from '@/components/filters'
 import { Sidebar } from '@/components/sidebar'
 import { MobileSidebar } from '@/components/mobile-sidebar'
+import { FavoriteButton } from '@/components/favorite-button'
 import Link from 'next/link'
 
-export default async function Home({ searchParams }: { searchParams: Promise<{ category?: string, q?: string, model?: string, tag?: string }> }) {
+export default async function Home({ searchParams }: { searchParams: Promise<{ category?: string, q?: string, model?: string, tag?: string, favorites?: string }> }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -29,6 +30,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
   const searchQuery = resolvedParams?.q
   const modelFilter = resolvedParams?.model
   const tagFilter = resolvedParams?.tag
+  const favoritesFilter = resolvedParams?.favorites === 'true'
 
   // Fetch categories
   const { data: categories } = await supabase
@@ -74,6 +76,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     query = query.contains('tags', [tagFilter])
   }
 
+  if (favoritesFilter) {
+    query = query.eq('is_favorite', true)
+  }
+
   if (searchQuery) {
     query = query.ilike('prompt_text', `%${searchQuery}%`)
   }
@@ -93,24 +99,29 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      <Sidebar activeCategoryId={categoryId} />
+      <Sidebar activeCategoryId={categoryId} isFavoritesView={favoritesFilter} />
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-hidden">
         {/* Topbar */}
-        <header className="flex h-14 items-center gap-4 border-b bg-white px-4 dark:bg-zinc-900 lg:px-6">
-          <MobileSidebar activeCategoryId={categoryId} />
-
-          <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-            <div className="flex-1 w-full max-w-2xl mx-auto">
-              <Filters models={allModels} tags={allTags} />
+        <header className="flex flex-col gap-4 border-b bg-white p-4 dark:bg-zinc-900 md:h-14 md:flex-row md:items-center md:p-0 md:px-4 lg:px-6 shrink-0">
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <MobileSidebar activeCategoryId={categoryId} isFavoritesView={favoritesFilter} />
+            <div className="md:hidden">
+              <NewPromptDialog categories={categories || []} />
             </div>
+          </div>
+
+          <div className="w-full md:flex-1">
+            <Filters models={allModels} tags={allTags} />
+          </div>
+          <div className="hidden md:block">
             <NewPromptDialog categories={categories || []} />
           </div>
         </header>
 
         {/* Grid View */}
-        <ScrollArea className="flex-1 p-4 lg:p-6">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {promptsWithUrls.length === 0 ? (
               <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -135,14 +146,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
                     </div>
                   )}
                   <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-                    <h3 className="font-medium text-sm truncate">{prompt.title || 'Untitled Prompt'}</h3>
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-medium text-sm truncate">{prompt.title || 'Untitled Prompt'}</h3>
+                      <FavoriteButton promptId={prompt.id} initialIsFavorite={prompt.is_favorite || false} />
+                    </div>
                     {prompt.model_used && <p className="text-xs text-zinc-500 mt-1">{prompt.model_used}</p>}
                   </div>
                 </PromptDetailDialog>
               ))
             )}
           </div>
-        </ScrollArea>
+        </div>
       </main>
     </div>
   )

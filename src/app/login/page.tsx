@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import { AuthError } from './auth-error'
 
 export default async function LoginPage({
   searchParams,
@@ -41,9 +42,7 @@ export default async function LoginPage({
               </div>
               <Input id="password" name="password" type="password" required />
             </div>
-            {resolvedParams?.error && (
-              <p className="text-sm text-red-500 font-medium">{resolvedParams.error}</p>
-            )}
+            <AuthError error={resolvedParams?.error} />
             <div className="pt-2">
               <Button formAction={isSignup ? signup : login} type="submit" className="w-full">
                 {isSignup ? 'Sign Up' : 'Log In'}

@@ -216,3 +216,19 @@ export async function updatePassword(formData: FormData) {
   if (error) return { error: error.message }
   return { success: true }
 }
+
+export async function toggleFavorite(id: string, isFavorite: boolean) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase.from('prompts').update({
+    is_favorite: isFavorite
+  }).eq('id', id).eq('user_id', user.id)
+
+  if (error) return { error: error.message }
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/')
+  return { success: true }
+}
