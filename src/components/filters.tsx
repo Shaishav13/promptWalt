@@ -24,7 +24,7 @@ export function Filters({ models, tags }: { models: string[], tags: string[] }) 
   const [searchValue, setSearchValue] = useState(currentQ)
 
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (name: string, value: string | null | undefined) => {
       const params = new URLSearchParams(searchParams.toString())
       if (value === 'all' || !value) {
         params.delete(name)
