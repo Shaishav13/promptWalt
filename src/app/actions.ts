@@ -55,12 +55,9 @@ export async function createPrompt(formData: FormData) {
       const fileName = `${crypto.randomUUID()}.${fileExt}`
       const filePath = `${user.id}/${fileName}`
 
-      const arrayBuffer = await imageFile.arrayBuffer()
-      const buffer = Buffer.from(arrayBuffer)
-
       const { error: uploadError } = await supabase.storage
         .from('prompt-images')
-        .upload(filePath, buffer, {
+        .upload(filePath, imageFile, {
           contentType: imageFile.type,
         })
 

@@ -36,18 +36,22 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
     e.preventDefault()
     setIsSubmitting(true)
     
-    const formData = new FormData(e.currentTarget)
-    const res = await createPrompt(formData)
-    
-    setIsSubmitting(false)
-
-    if (res?.error) {
-      toast.error(res.error)
-    } else {
-      toast.success("Prompt saved!")
-      setFileNames([])
-      setFileError(null)
-      setOpen(false)
+    try {
+      const formData = new FormData(e.currentTarget)
+      const res = await createPrompt(formData)
+      
+      if (res?.error) {
+        toast.error(res.error)
+      } else {
+        toast.success("Prompt saved!")
+        setFileNames([])
+        setFileError(null)
+        setOpen(false)
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 

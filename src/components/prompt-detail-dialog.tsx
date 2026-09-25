@@ -66,15 +66,21 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
-    const formData = new FormData(e.currentTarget)
-    const res = await updatePrompt(prompt.id, formData)
-    setIsSubmitting(false)
+    
+    try {
+      const formData = new FormData(e.currentTarget)
+      const res = await updatePrompt(prompt.id, formData)
 
-    if (res?.error) {
-      toast.error(res.error)
-    } else {
-      toast.success("Prompt updated!")
-      setIsEditing(false)
+      if (res?.error) {
+        toast.error(res.error)
+      } else {
+        toast.success("Prompt updated!")
+        setIsEditing(false)
+      }
+    } catch (err: any) {
+      toast.error(err.message || "An unexpected error occurred.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
