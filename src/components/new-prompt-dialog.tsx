@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Plus, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createPrompt } from '@/app/actions'
+import { createClient } from '@/utils/supabase/client'
 
 export function NewPromptDialog({ categories = [] }: { categories?: { id: string, name: string }[] }) {
   const [open, setOpen] = useState(false)
@@ -37,7 +38,37 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
     setIsSubmitting(true)
     
     try {
-      const formData = new FormData(e.currentTarget)
+      const formElement = e.currentTarget
+      const formData = new FormData(formElement)
+      const imageFiles = formData.getAll('images') as File[]
+      
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error("You must be logged in to upload images.")
+
+      const uploadedPaths: string[] = []
+      
+      for (const file of imageFiles) {
+        if (file && file.size > 0) {
+          const fileExt = file.name.split('.').pop()
+          const fileName = `${crypto.randomUUID()}.${fileExt}`
+          const filePath = `${user.id}/${fileName}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('prompt-images')
+            .upload(filePath, file, { contentType: file.type })
+
+          if (uploadError) throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
+          
+          uploadedPaths.push(filePath)
+        }
+      }
+
+      // Remove the large files from formData so we don't hit Vercel payload limits
+      formData.delete('images')
+      // Append the paths we just uploaded
+      uploadedPaths.forEach(path => formData.append('image_paths', path))
+
       const res = await createPrompt(formData)
       
       if (res?.error) {
@@ -47,6 +78,7 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
         setFileNames([])
         setFileError(null)
         setOpen(false)
+        formElement.reset()
       }
     } catch (err: any) {
       toast.error(err.message || "An unexpected error occurred.")
@@ -115,8 +147,8 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
                       }
                       
                       for (const file of files) {
-                        if (file.size > 4 * 1024 * 1024) {
-                          setFileError(`File ${file.name} exceeds the 4MB limit.`)
+                        if (file.size > 5 * 1024 * 1024) {
+                          setFileError(`File ${file.name} exceeds the 5MB limit.`)
                           setFileNames([])
                           e.target.value = ''
                           return
@@ -130,7 +162,7 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
                 </label>
               </div>
               <div className="flex justify-between items-start">
-                <p className="text-[10px] text-zinc-500">Max 2 images per prompt. Max size is 4MB.</p>
+                <p className="text-[10px] text-zinc-500">Max 2 images per prompt. Max size is 5MB per image.</p>
                 {fileError && <p className="text-[10px] text-red-500">{fileError}</p>}
               </div>
             </div>

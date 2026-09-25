@@ -18,7 +18,7 @@ export async function createPrompt(formData: FormData) {
   const modelUsed = formData.get('model_used') as string
   const tagsString = formData.get('tags') as string
   const categoryId = formData.get('category_id') as string || null
-  const imageFiles = formData.getAll('images') as File[]
+  const imagePaths = formData.getAll('image_paths') as string[]
 
   function generateTitle(text: string) {
     const segments = text.split(/[,.|\n]+/)
@@ -44,30 +44,7 @@ export async function createPrompt(formData: FormData) {
 
   const title = generateTitle(promptText)
 
-  let demo_image_urls: string[] = []
-
-  for (const imageFile of imageFiles) {
-    if (imageFile && imageFile.size > 0) {
-      if (imageFile.size > 4 * 1024 * 1024) {
-        return { error: `File ${imageFile.name} exceeds the 4MB limit.` }
-      }
-      const fileExt = imageFile.name.split('.').pop()
-      const fileName = `${crypto.randomUUID()}.${fileExt}`
-      const filePath = `${user.id}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('prompt-images')
-        .upload(filePath, imageFile, {
-          contentType: imageFile.type,
-        })
-
-      if (uploadError) {
-        console.error("Upload error:", uploadError)
-        return { error: `Failed to upload image: ${uploadError.message || JSON.stringify(uploadError)}` }
-      }
-      demo_image_urls.push(filePath)
-    }
-  }
+  const demo_image_urls = imagePaths
 
   const tags = tagsString ? tagsString.split(',').map(t => t.trim()) : []
 
