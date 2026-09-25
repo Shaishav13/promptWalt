@@ -64,8 +64,16 @@ export async function resetPassword(formData: FormData) {
 
 export async function signInWithGoogle() {
   const supabase = await createClient()
-  const { headers } = await import('next/headers')
-  const origin = (await headers()).get('origin') || 'http://localhost:3000'
+  
+  // Reliably get the origin in Vercel/Next.js
+  let origin = 'http://localhost:3000'
+  if (process.env.VERCEL_URL) {
+    origin = `https://${process.env.VERCEL_URL}`
+  } else {
+    const { headers } = await import('next/headers')
+    const headersList = await headers()
+    origin = headersList.get('origin') || headersList.get('host') ? `https://${headersList.get('host')}` : 'http://localhost:3000'
+  }
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
