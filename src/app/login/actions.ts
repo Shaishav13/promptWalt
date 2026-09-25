@@ -65,15 +65,11 @@ export async function resetPassword(formData: FormData) {
 export async function signInWithGoogle() {
   const supabase = await createClient()
   
-  // Reliably get the origin in Vercel/Next.js
-  let origin = 'http://localhost:3000'
-  if (process.env.VERCEL_URL) {
-    origin = `https://${process.env.VERCEL_URL}`
-  } else {
-    const { headers } = await import('next/headers')
-    const headersList = await headers()
-    origin = headersList.get('origin') || headersList.get('host') ? `https://${headersList.get('host')}` : 'http://localhost:3000'
-  }
+  // Explicitly hardcoding the production URL to ensure 
+  // Supabase NEVER throws a redirect mismatch error.
+  const origin = process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000' 
+    : 'https://promptwalt.vercel.app'
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
