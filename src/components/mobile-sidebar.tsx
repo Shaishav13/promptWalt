@@ -26,12 +26,12 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle menu</span>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
-        <div className="flex h-14 items-center gap-2 border-b px-4">
+      <SheetContent side="left" className="w-64 p-0 flex flex-col">
+        <div className="flex h-14 items-center gap-2 border-b px-4 shrink-0">
           <Image src="/logo.png" alt="PromptWalt" width={24} height={24} className="rounded-sm dark:invert" />
           <span className="text-lg font-bold">PromptWalt</span>
         </div>
-        <ScrollArea className="flex-1 py-4 h-[calc(100vh-120px)]">
+        <div className="flex-1 overflow-y-auto py-4">
           <div className="space-y-1 px-2">
             <Link href="/">
               <Button variant="ghost" className="w-full justify-start">
@@ -71,8 +71,8 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
               </Link>
             ))}
           </div>
-        </ScrollArea>
-        <div className="border-t p-4 flex items-center justify-between mt-auto">
+        </div>
+        <div className="border-t p-4 flex items-center justify-between mt-auto shrink-0">
           <form action={logout} className="flex-1">
             <Button variant="ghost" type="submit" className="w-full justify-start text-red-600">
               <LogOut className="mr-2 h-4 w-4" />

@@ -101,14 +101,14 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
           {/* Image Section */}
           <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0">
             {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
-              <ScrollArea className="w-full h-full absolute inset-0">
+              <div className="w-full h-full absolute inset-0 overflow-y-auto">
                 <div className="flex flex-col">
                   {prompt.signedUrls.map((url, i) => (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img key={i} src={url} alt={`${prompt.title || 'Prompt image'} ${i+1}`} className="w-full h-auto object-cover" />
                   ))}
                 </div>
-              </ScrollArea>
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center p-8 text-zinc-400">
                 No demo images provided
@@ -149,7 +149,7 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
             
             {isEditing ? (
               <form id={`edit-form-${prompt.id}`} onSubmit={handleUpdate} className="flex-1 flex flex-col min-h-0">
-                <ScrollArea className="flex-1 p-6">
+                <div className="flex-1 p-6 overflow-y-auto">
                   <div className="space-y-4">
                     <div>
                       <label className="text-sm font-semibold mb-2 block">Prompt Text</label>
@@ -184,42 +184,42 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       <Input name="tags" defaultValue={prompt.tags?.join(', ')} placeholder="Comma separated" />
                     </div>
                   </div>
-                </ScrollArea>
+                </div>
               </form>
             ) : (
-              <ScrollArea className="flex-1 p-6">
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2">Prompt</h4>
-                    <div className="relative group/copy">
-                      <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap">
-                        {prompt.prompt_text}
-                      </div>
-                      <Button 
-                        onClick={handleCopy}
-                        size="icon" 
-                        variant="secondary" 
-                        className="absolute top-2 right-2 opacity-0 group-hover/copy:opacity-100 transition-opacity"
-                      >
-                        {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </div>
-
-                  {prompt.tags && prompt.tags.length > 0 && (
+                <div className="flex-1 p-6 overflow-y-auto">
+                  <div className="space-y-6">
                     <div>
-                      <h4 className="text-sm font-semibold mb-2">Tags</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {prompt.tags.map((tag) => (
-                          <span key={tag} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                            {tag}
-                          </span>
-                        ))}
+                      <h4 className="text-sm font-semibold mb-2">Prompt</h4>
+                      <div className="relative group/copy">
+                        <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap">
+                          {prompt.prompt_text}
+                        </div>
+                        <Button 
+                          onClick={handleCopy}
+                          size="icon" 
+                          variant="secondary" 
+                          className="absolute top-2 right-2 opacity-0 group-hover/copy:opacity-100 transition-opacity"
+                        >
+                          {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                        </Button>
                       </div>
                     </div>
-                  )}
+
+                    {prompt.tags && prompt.tags.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2">Tags</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {prompt.tags.map((tag) => (
+                            <span key={tag} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </ScrollArea>
             )}
             
             <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 flex justify-end gap-2 shrink-0">

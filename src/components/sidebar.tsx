@@ -25,7 +25,7 @@ export async function Sidebar({ activeCategoryId, isFavoritesView }: { activeCat
         <Image src="/logo.png" alt="PromptWalt" width={24} height={24} className="rounded-sm" />
         <span className="text-lg font-bold">PromptWalt</span>
       </div>
-      <ScrollArea className="flex-1 py-4">
+      <div className="flex-1 overflow-y-auto py-4">
         <div className="space-y-1 px-2">
           <Link href="/">
             <Button variant="ghost" className="w-full justify-start">
@@ -65,8 +65,8 @@ export async function Sidebar({ activeCategoryId, isFavoritesView }: { activeCat
             </Link>
           ))}
         </div>
-      </ScrollArea>
-      <div className="border-t p-4 flex items-center justify-between">
+      </div>
+      <div className="border-t p-4 flex items-center justify-between shrink-0">
         <form action={logout} className="flex-1">
           <Button variant="ghost" type="submit" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50">
             <LogOut className="mr-2 h-4 w-4" />
