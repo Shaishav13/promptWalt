@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { updatePrompt, deletePrompt, createShareLink } from '@/app/actions'
 
 interface PromptDetailDialogProps {
@@ -44,6 +45,7 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
+  const [categoryId, setCategoryId] = useState<string>(prompt.category_id || "")
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt.prompt_text)
@@ -99,14 +101,17 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="cursor-pointer group relative overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 hover:ring-2 hover:ring-primary/50 transition-all text-left block w-full">
+      <div 
+        onClick={() => setOpen(true)}
+        className="cursor-pointer group relative overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 hover:ring-2 hover:ring-primary/50 transition-all text-left block w-full"
+      >
         {children}
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl p-0 md:overflow-hidden overflow-y-auto max-h-[90vh] bg-white dark:bg-zinc-950 border-0 shadow-2xl flex flex-col">
-        <div className="flex flex-col md:flex-row md:h-[600px]">
+      </div>
+      <DialogContent closeButtonClassName="md:hidden" className="sm:max-w-[900px] w-[95vw] p-0 md:overflow-hidden overflow-y-auto max-h-[90vh] bg-white dark:bg-zinc-950 border-0 shadow-2xl flex flex-col">
+        <div className={`flex flex-col ${prompt.signedUrls && prompt.signedUrls.length > 0 ? 'md:flex-row' : ''} md:h-[650px]`}>
           {/* Image Section */}
-          <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0">
-            {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
+          {prompt.signedUrls && prompt.signedUrls.length > 0 && (
+            <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0">
               <div className="w-full h-full absolute inset-0 overflow-y-auto">
                 <div className="flex flex-col">
                   {prompt.signedUrls.map((url, i) => (
@@ -115,15 +120,11 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center p-8 text-zinc-400">
-                No demo images provided
-              </div>
-            )}
-          </div>
+            </div>
+          )}
           
           {/* Details Section */}
-          <div className="w-full md:w-1/2 flex flex-col h-full border-l border-zinc-200 dark:border-zinc-800">
+          <div className={`w-full ${prompt.signedUrls && prompt.signedUrls.length > 0 ? 'md:w-1/2 border-l' : 'md:w-full'} flex flex-col h-full border-zinc-200 dark:border-zinc-800`}>
             <DialogHeader className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex-shrink-0">
               <div className="flex justify-between items-start gap-4">
                 <div>
@@ -139,6 +140,10 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={handleShare} disabled={isSharing}>
+                        {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
+                        Share
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setIsEditing(true)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
@@ -173,16 +178,19 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       </div>
                       <div>
                         <label className="text-sm font-semibold mb-2 block">Category</label>
-                        <select 
-                          name="category_id" 
-                          defaultValue={prompt.category_id || ""}
-                          className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          <option value="">No Category</option>
-                          {categories.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
-                          ))}
-                        </select>
+                        <Select name="category_id" value={categoryId} onValueChange={setCategoryId}>
+                          <SelectTrigger className="w-full h-9">
+                            <SelectValue placeholder="No Category">
+                              {categories.find(c => c.id === categoryId)?.name || "No Category"}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="">No Category</SelectItem>
+                            {categories.map(c => (
+                              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div>
@@ -196,19 +204,22 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                 <div className="flex-1 p-6 overflow-y-auto">
                   <div className="space-y-6">
                     <div>
-                      <h4 className="text-sm font-semibold mb-2">Prompt</h4>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold">Prompt</h4>
+                        <Button 
+                          onClick={handleCopy}
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-8 gap-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+                        >
+                          {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+                          <span className="text-xs">Copy</span>
+                        </Button>
+                      </div>
                       <div className="relative group/copy">
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap">
                           {prompt.prompt_text}
                         </div>
-                        <Button 
-                          onClick={handleCopy}
-                          size="icon" 
-                          variant="secondary" 
-                          className="absolute top-2 right-2 opacity-0 group-hover/copy:opacity-100 transition-opacity"
-                        >
-                          {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-                        </Button>
                       </div>
                     </div>
 
@@ -239,16 +250,8 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" onClick={handleShare} disabled={isSharing}>
-                    {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4 mr-2" />}
-                    Share
-                  </Button>
                   <div className="flex-1"></div>
                   <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
-                  <Button onClick={handleCopy} className="gap-2">
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                    Copy Prompt
-                  </Button>
                 </>
               )}
             </div>

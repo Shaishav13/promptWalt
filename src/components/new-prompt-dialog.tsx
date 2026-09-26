@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Plus, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createPrompt } from '@/app/actions'
@@ -24,11 +25,13 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fileNames, setFileNames] = useState<string[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
+  const [categoryId, setCategoryId] = useState<string>("")
 
   function handleOpenChange(newOpen: boolean) {
     if (!newOpen) {
       setFileNames([])
       setFileError(null)
+      setCategoryId("")
     }
     setOpen(newOpen)
   }
@@ -174,16 +177,19 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="category_id">Category (Optional)</Label>
-                <select 
-                  id="category_id" 
-                  name="category_id" 
-                  className="flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
-                >
-                  <option value="">No Category</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                <Select name="category_id" value={categoryId} onValueChange={setCategoryId}>
+                  <SelectTrigger className="w-full h-9">
+                    <SelectValue placeholder="No Category">
+                      {categories.find(c => c.id === categoryId)?.name || "No Category"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">No Category</SelectItem>
+                    {categories.map(c => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="grid gap-2">

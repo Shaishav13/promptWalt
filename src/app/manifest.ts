@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'PromptWaltsss',
-    short_name: 'PromptWalts',
+    name: 'PromptWalt',
+    short_name: 'PromptWalt',
     description: 'Personal AI Prompt Manager',
     start_url: '/',
     display: 'standalone',

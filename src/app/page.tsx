@@ -147,10 +147,34 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
                   )}
                   <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950">
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-medium text-sm truncate">{prompt.title || 'Untitled Prompt'}</h3>
+                      <h3 className="font-medium text-sm truncate flex items-center gap-2">
+                        {(() => {
+                          const cat = categories?.find(c => c.id === prompt.category_id)
+                          if (!cat) return null
+                          return (
+                            <span 
+                              className="w-2 h-2 rounded-full shrink-0" 
+                              style={{ backgroundColor: cat.color || '#3b82f6' }}
+                              title={cat.name}
+                            />
+                          )
+                        })()}
+                        {prompt.title || 'Untitled Prompt'}
+                      </h3>
                       <FavoriteButton promptId={prompt.id} initialIsFavorite={prompt.is_favorite || false} />
                     </div>
-                    {prompt.model_used && <p className="text-xs text-zinc-500 mt-1">{prompt.model_used}</p>}
+                    <div className="flex flex-wrap items-center gap-2 mt-1 min-h-[20px]">
+                      {prompt.model_used && <p className="text-xs text-zinc-500 truncate max-w-[60%]">{prompt.model_used}</p>}
+                      {(() => {
+                        const cat = categories?.find(c => c.id === prompt.category_id)
+                        if (!cat) return null
+                        return (
+                          <p className="text-[10px] px-1.5 py-0.5 rounded-sm bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium ml-auto truncate max-w-[40%]">
+                            {cat.name}
+                          </p>
+                        )
+                      })()}
+                    </div>
                   </div>
                 </PromptDetailDialog>
               ))
