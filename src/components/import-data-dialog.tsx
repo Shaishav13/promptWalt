@@ -117,9 +117,9 @@ export function ImportDataDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={
-        <Button variant="ghost" className="w-full justify-start mt-1 text-primary hover:text-primary hover:bg-primary/10">
-          <Download className="mr-2 h-4 w-4" />
-          Import Data
+        <Button size="sm" variant="secondary" className="shadow-sm">
+          <Download className="mr-2 h-3 w-3" />
+          Import JSON
         </Button>
       }>
       </DialogTrigger>

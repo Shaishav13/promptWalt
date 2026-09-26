@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button'
 import { LogOut, User, Hexagon, Menu, Settings } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { NewCategoryDialog } from '@/components/new-category-dialog'
-import { ImportDataDialog } from '@/components/import-data-dialog'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import Link from 'next/link'
@@ -44,13 +43,6 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
                 Favorites
               </Button>
             </Link>
-            <Link href="/profile">
-              <Button variant="ghost" className="w-full justify-start mt-1">
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </Button>
-            </Link>
-            <ImportDataDialog />
             <Link href="/settings">
               <Button variant="ghost" className="w-full justify-start">
                 <Settings className="mr-2 h-4 w-4" />

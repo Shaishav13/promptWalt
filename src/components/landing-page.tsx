@@ -14,14 +14,11 @@ export function LandingPage() {
             <Image src="/logo.png" alt="PromptWalt" width={28} height={28} className="rounded-md" />
             <span className="text-xl font-bold tracking-tight">PromptWalt</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <ThemeToggle />
-            <Link href="/login" className="text-sm font-medium hover:text-primary transition-colors">
-              Log in
-            </Link>
             <Link href="/login">
-              <Button className="rounded-full shadow-md shadow-primary/20 hover:shadow-primary/40 transition-all">
-                Sign Up Free
+              <Button size="sm" className="md:h-10 md:px-4 md:py-2 rounded-full shadow-md shadow-primary/20 hover:shadow-primary/40 transition-all text-xs md:text-sm">
+                Log In
               </Button>
             </Link>
           </div>
@@ -32,9 +29,9 @@ export function LandingPage() {
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-zinc-50 to-zinc-50 dark:from-primary/10 dark:via-zinc-950 dark:to-zinc-950"></div>
         <div className="max-w-5xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-both">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-8 border border-primary/20">
+          {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-8 border border-primary/20">
             <Sparkles className="w-4 h-4" /> The ultimate AI companion
-          </div>
+          </div> */}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
             Never lose a <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">brilliant prompt</span> again.
           </h1>
@@ -42,7 +39,7 @@ export function LandingPage() {
             PromptWalt is your personal vault for organizing, categorizing, and sharing your best AI prompts. Built for power users of ChatGPT, Claude, and Midjourney.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/login">
+            <Link href="/login?mode=signup">
               <Button size="lg" className="rounded-full h-14 px-8 text-lg font-medium shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto">
                 Get Started for Free <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
@@ -96,7 +93,7 @@ export function LandingPage() {
               </div>
             </div>
           </div>
-          
+
           {/* Decorative blurs */}
           <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] -z-10"></div>
           <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[100px] -z-10"></div>
@@ -112,7 +109,7 @@ export function LandingPage() {
               Built for speed and elegance. Manage thousands of prompts without breaking a sweat.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl shadow-sm border border-zinc-200/50 dark:border-zinc-800/50 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary">
@@ -123,7 +120,7 @@ export function LandingPage() {
                 Tag, categorize, and color-code your library. Find that one perfect system prompt from six months ago in seconds.
               </p>
             </div>
-            
+
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl shadow-sm border border-zinc-200/50 dark:border-zinc-800/50 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 text-blue-500">
                 <Sparkles className="w-6 h-6" />
@@ -133,7 +130,7 @@ export function LandingPage() {
                 Never lose a prompt again. Instantly pull up exactly what you need using real-time search, category filters, and tags.
               </p>
             </div>
-            
+
             <div className="bg-white dark:bg-zinc-950 p-8 rounded-3xl shadow-sm border border-zinc-200/50 dark:border-zinc-800/50 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
                 <Share2 className="w-6 h-6" />
@@ -154,8 +151,13 @@ export function LandingPage() {
             <Image src="/logo.png" alt="PromptWalt" width={24} height={24} className="rounded-md opacity-75" />
             <span className="font-semibold text-zinc-500">PromptWalt</span>
           </div>
-          <div className="text-sm text-zinc-500 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4" /> 100% Free & Private
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
+            <Link href="/privacy-policy" className="text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 transition-colors">
+              Privacy Policy
+            </Link>
+            <div className="text-sm text-zinc-500 flex items-center gap-2 border-t md:border-t-0 md:border-l border-zinc-200 dark:border-zinc-800 pt-4 md:pt-0 md:pl-6">
+              <ShieldCheck className="w-4 h-4" /> 100% Free & Private
+            </div>
           </div>
         </div>
       </footer>

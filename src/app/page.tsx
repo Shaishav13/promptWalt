@@ -108,16 +108,26 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         <header className="flex flex-col gap-4 border-b bg-white p-4 dark:bg-zinc-900 md:h-14 md:flex-row md:items-center md:p-0 md:px-4 lg:px-6 shrink-0">
           <div className="flex items-center justify-between w-full md:w-auto">
             <MobileSidebar activeCategoryId={categoryId} isFavoritesView={favoritesFilter} />
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-2">
               <NewPromptDialog categories={categories || []} />
+              <Link href="/profile">
+                <Button variant="ghost" size="icon" className="rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+                  <User className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </div>
 
           <div className="w-full md:flex-1">
             <Filters models={allModels} tags={allTags} />
           </div>
-          <div className="hidden md:block">
+          <div className="hidden md:flex md:items-center md:gap-3">
             <NewPromptDialog categories={categories || []} />
+            <Link href="/profile">
+              <Button variant="ghost" size="icon" className="rounded-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700">
+                <User className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </header>
 
