@@ -40,9 +40,10 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
     notFound()
   }
 
-  // Fetch signed URLs for images
+  // Fetch signed URLs for images if allowed
+  const includeImages = !token.endsWith('-noimg')
   let signedUrls: string[] = []
-  if (prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
+  if (includeImages && prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
     for (const url of prompt.demo_image_urls) {
       const { data } = await supabase.storage.from('prompt-images').createSignedUrl(url, 3600)
       if (data?.signedUrl) signedUrls.push(data.signedUrl)
@@ -102,8 +103,10 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 </div>
               </ScrollArea>
             ) : (
-              <div className="w-full h-full flex items-center justify-center p-8 text-zinc-400">
-                No demo images provided
+              <div className="w-full h-full flex flex-col items-center justify-center p-8 text-zinc-400 text-sm">
+                {!includeImages && prompt.demo_image_urls?.length > 0 
+                  ? 'Demo image not shared' 
+                  : 'No demo images provided'}
               </div>
             )}
           </div>

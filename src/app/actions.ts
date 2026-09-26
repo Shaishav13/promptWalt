@@ -130,25 +130,27 @@ export async function createCategory(formData: FormData) {
   return { success: true }
 }
 
-export async function createShareLink(promptId: string) {
+export async function createShareLink(promptId: string, includeImages: boolean = true) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  // Check if a token already exists
-  const { data: existingShare } = await supabase
+  // Check if a token with the requested preference already exists
+  const { data: existingShares } = await supabase
     .from('shares')
     .select('share_token')
     .eq('prompt_id', promptId)
     .eq('shared_by', user.id)
-    .single()
 
-  if (existingShare?.share_token) {
-    return { token: existingShare.share_token }
+  if (existingShares) {
+    const match = existingShares.find(s => includeImages ? !s.share_token.endsWith('-noimg') : s.share_token.endsWith('-noimg'))
+    if (match) {
+      return { token: match.share_token }
+    }
   }
 
   // Create new share token
-  const token = crypto.randomUUID()
+  const token = crypto.randomUUID() + (includeImages ? '' : '-noimg')
   const { error } = await supabase.from('shares').insert({
     prompt_id: promptId,
     shared_by: user.id,

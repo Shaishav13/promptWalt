@@ -86,9 +86,9 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     }
   }
 
-  async function handleShare() {
+  async function handleShare(includeImages: boolean = true) {
     setIsSharing(true)
-    const res = await createShareLink(prompt.id)
+    const res = await createShareLink(prompt.id, includeImages)
     setIsSharing(false)
     if (res?.error) {
       toast.error(res.error)
@@ -140,10 +140,23 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={handleShare} disabled={isSharing}>
-                        {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
-                        Share
-                      </DropdownMenuItem>
+                      {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
+                        <>
+                          <DropdownMenuItem onClick={() => handleShare(true)} disabled={isSharing}>
+                            {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
+                            Share (with images)
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleShare(false)} disabled={isSharing}>
+                            {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
+                            Share (text only)
+                          </DropdownMenuItem>
+                        </>
+                      ) : (
+                        <DropdownMenuItem onClick={() => handleShare(false)} disabled={isSharing}>
+                          {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
+                          Share
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem onClick={() => setIsEditing(true)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
