@@ -45,6 +45,7 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSharing, setIsSharing] = useState(false)
+  const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [categoryId, setCategoryId] = useState<string>(prompt.category_id || "")
 
   const handleCopy = () => {
@@ -90,6 +91,7 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     setIsSharing(true)
     const res = await createShareLink(prompt.id, includeImages)
     setIsSharing(false)
+    setShareDialogOpen(false)
     if (res?.error) {
       toast.error(res.error)
     } else if (res?.token) {
@@ -99,7 +101,16 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     }
   }
 
+  function handleShareClick() {
+    if (prompt.signedUrls && prompt.signedUrls.length > 0) {
+      setShareDialogOpen(true)
+    } else {
+      handleShare(false)
+    }
+  }
+
   return (
+    <>
     <Dialog open={open} onOpenChange={setOpen}>
       <div 
         onClick={() => setOpen(true)}
@@ -140,23 +151,10 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
-                        <>
-                          <DropdownMenuItem onClick={() => handleShare(true)} disabled={isSharing}>
-                            {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
-                            Share (with images)
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleShare(false)} disabled={isSharing}>
-                            {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
-                            Share (text only)
-                          </DropdownMenuItem>
-                        </>
-                      ) : (
-                        <DropdownMenuItem onClick={() => handleShare(false)} disabled={isSharing}>
-                          {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
-                          Share
-                        </DropdownMenuItem>
-                      )}
+                      <DropdownMenuItem onClick={handleShareClick} disabled={isSharing}>
+                        {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
+                        Share
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setIsEditing(true)}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
@@ -272,5 +270,46 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
         </div>
       </DialogContent>
     </Dialog>
+    
+    {/* Secondary Dialog for Share Options */}
+    <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+      <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-xl text-center">Share Prompt</DialogTitle>
+          <DialogDescription className="text-center pt-2">
+            This prompt contains a demo image. Would you like to include it in the public share link?
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex flex-col gap-3">
+          <Button 
+            className="w-full h-12 justify-start px-6 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800" 
+            variant="outline" 
+            onClick={() => handleShare(true)}
+            disabled={isSharing}
+          >
+            {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
+            <div className="flex flex-col items-start text-left">
+              <span className="font-semibold text-sm leading-tight">Share with image</span>
+              <span className="text-[10px] text-zinc-500 font-normal">Viewers will see your prompt and the demo image</span>
+            </div>
+          </Button>
+          
+          <Button 
+            className="w-full h-12 justify-start px-6 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800" 
+            variant="outline" 
+            onClick={() => handleShare(false)}
+            disabled={isSharing}
+          >
+            {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
+            <div className="flex flex-col items-start text-left">
+              <span className="font-semibold text-sm leading-tight">Share text only</span>
+              <span className="text-[10px] text-zinc-500 font-normal">Viewers will only see the text of your prompt</span>
+            </div>
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
