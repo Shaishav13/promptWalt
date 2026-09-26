@@ -65,23 +65,32 @@ export function LandingPage() {
             <div className="flex h-full">
               {/* Fake Sidebar */}
               <div className="w-48 border-r border-zinc-200/50 dark:border-zinc-800/50 p-4 hidden md:block">
-                <div className="h-4 w-24 bg-zinc-200 dark:bg-zinc-800 rounded mb-6"></div>
-                <div className="space-y-3">
-                  <div className="h-6 w-full bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-                  <div className="h-6 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-                  <div className="h-6 w-5/6 bg-primary/20 rounded"></div>
+                <div className="h-4 w-24 font-bold text-sm mb-6">PromptWalt</div>
+                <div className="space-y-4 text-xs font-medium text-zinc-500">
+                  <div className="flex items-center gap-2 text-primary bg-primary/10 px-2 py-1.5 rounded-md"><Box className="w-3 h-3" /> All Prompts</div>
+                  <div className="flex items-center gap-2 px-2 py-1"><div className="w-2 h-2 rounded-full bg-amber-400"></div> Code</div>
+                  <div className="flex items-center gap-2 px-2 py-1"><div className="w-2 h-2 rounded-full bg-blue-400"></div> Writing</div>
+                  <div className="flex items-center gap-2 px-2 py-1"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Art</div>
                 </div>
               </div>
               {/* Fake Grid */}
               <div className="flex-1 p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
+                {[
+                  { title: "React Component Gen", cat: "Code", color: "bg-amber-400", desc: "Create a functional React component..." },
+                  { title: "Blog Post Intro", cat: "Writing", color: "bg-blue-400", desc: "Write a compelling introduction for..." },
+                  { title: "Midjourney Portrait", cat: "Art", color: "bg-emerald-400", desc: "Hyperrealistic portrait of a..." },
+                  { title: "SEO Optimizer", cat: "Writing", color: "bg-blue-400", desc: "Analyze the following text and..." },
+                  { title: "Python Script Debug", cat: "Code", color: "bg-amber-400", desc: "Find the memory leak in this script..." },
+                  { title: "Cyberpunk City", cat: "Art", color: "bg-emerald-400", desc: "Neon lit cyberpunk street in..." }
+                ].map((item, i) => (
                   <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm flex flex-col gap-3 group hover:border-primary/50 transition-colors">
-                    <div className="h-32 bg-zinc-100 dark:bg-zinc-950 rounded-lg w-full flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
-                      <Box className="w-8 h-8 text-zinc-300 dark:text-zinc-700 group-hover:scale-110 transition-transform" />
+                    <div className="h-28 bg-zinc-50 dark:bg-zinc-950 rounded-lg w-full flex p-3 text-[10px] text-zinc-400 font-mono relative overflow-hidden border border-zinc-100 dark:border-zinc-800">
+                      {item.desc}
                     </div>
-                    <div className="h-4 w-3/4 bg-zinc-200 dark:bg-zinc-800 rounded"></div>
-                    <div className="h-3 w-1/2 bg-zinc-100 dark:bg-zinc-800 rounded"></div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
+                      <div className="font-semibold text-xs truncate">{item.title}</div>
+                    </div>
                   </div>
                 ))}
               </div>
