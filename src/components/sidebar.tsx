@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { LogOut, User, Hexagon } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { NewCategoryDialog } from '@/components/new-category-dialog'
+import { ImportDataDialog } from '@/components/import-data-dialog'
 import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -43,6 +44,7 @@ export async function Sidebar({ activeCategoryId, isFavoritesView }: { activeCat
               Profile
             </Button>
           </Link>
+          <ImportDataDialog />
           <div className="pt-4 pb-2 px-4 text-xs font-semibold text-zinc-500 uppercase flex items-center justify-between">
             Categories
             <NewCategoryDialog />

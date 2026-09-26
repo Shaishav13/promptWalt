@@ -111,6 +111,16 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
             
             <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex justify-end gap-3">
               <PublicCopyButton text={prompt.prompt_text} />
+              
+              <form action={async () => {
+                'use server'
+                const { cloneSharedPrompt } = await import('@/app/actions')
+                await cloneSharedPrompt(token)
+              }}>
+                <Button type="submit" variant="default">
+                  Save to my Library
+                </Button>
+              </form>
             </div>
           </div>
         </div>

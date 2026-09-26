@@ -177,7 +177,7 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="category_id">Category (Optional)</Label>
-                <Select name="category_id" value={categoryId} onValueChange={setCategoryId}>
+                <Select name="category_id" value={categoryId} onValueChange={(val) => setCategoryId(val || "")}>
                   <SelectTrigger className="w-full h-9">
                     <SelectValue placeholder="No Category">
                       {categories.find(c => c.id === categoryId)?.name || "No Category"}

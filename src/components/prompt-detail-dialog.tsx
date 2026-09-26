@@ -178,7 +178,7 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       </div>
                       <div>
                         <label className="text-sm font-semibold mb-2 block">Category</label>
-                        <Select name="category_id" value={categoryId} onValueChange={setCategoryId}>
+                        <Select name="category_id" value={categoryId} onValueChange={(val) => setCategoryId(val || "")}>
                           <SelectTrigger className="w-full h-9">
                             <SelectValue placeholder="No Category">
                               {categories.find(c => c.id === categoryId)?.name || "No Category"}

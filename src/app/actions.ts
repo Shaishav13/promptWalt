@@ -206,3 +206,64 @@ export async function toggleFavorite(id: string, isFavorite: boolean) {
   revalidatePath('/')
   return { success: true }
 }
+
+export async function cloneSharedPrompt(token: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    redirect('/login')
+  }
+
+  const { data: shareData, error: shareError } = await supabase
+    .from('shares')
+    .select('prompt_id')
+    .eq('share_token', token)
+    .single()
+
+  if (shareError || !shareData) return { error: 'Share link not found' }
+
+  const { data: originalPrompt, error: promptError } = await supabase
+    .from('prompts')
+    .select('*')
+    .eq('id', shareData.prompt_id)
+    .single()
+
+  if (promptError || !originalPrompt) return { error: 'Original prompt not found' }
+
+  const { error: insertError } = await supabase.from('prompts').insert({
+    user_id: user.id,
+    prompt_text: originalPrompt.prompt_text,
+    title: `Copy of ${originalPrompt.title || 'Untitled'}`,
+    model_used: originalPrompt.model_used,
+    tags: originalPrompt.tags,
+    demo_image_urls: originalPrompt.demo_image_urls,
+    visibility: 'private'
+  })
+
+  if (insertError) return { error: insertError.message }
+
+  redirect('/')
+}
+
+export async function bulkInsertPrompts(prompts: { prompt_text: string, title: string, model_used?: string }[]) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const formattedPrompts = prompts.map(p => ({
+    user_id: user.id,
+    prompt_text: p.prompt_text,
+    title: p.title || 'Imported Prompt',
+    model_used: p.model_used || 'ChatGPT',
+    visibility: 'private',
+    tags: ['Imported']
+  }))
+
+  const { error } = await supabase.from('prompts').insert(formattedPrompts)
+  
+  if (error) return { error: error.message }
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/')
+  return { success: true }
+}
