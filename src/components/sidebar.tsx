@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { logout } from '@/app/actions'
 import { Button } from '@/components/ui/button'
-import { LogOut, User, Hexagon } from 'lucide-react'
+import { LogOut, User, Hexagon, Settings } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { NewCategoryDialog } from '@/components/new-category-dialog'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -41,6 +41,12 @@ export async function Sidebar({ activeCategoryId, isFavoritesView }: { activeCat
             <Button variant="ghost" className="w-full justify-start mt-1">
               <User className="mr-2 h-4 w-4" />
               Profile
+            </Button>
+          </Link>
+          <Link href="/settings">
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
             </Button>
           </Link>
           <div className="pt-4 pb-2 px-4 text-xs font-semibold text-zinc-500 uppercase flex items-center justify-between">
