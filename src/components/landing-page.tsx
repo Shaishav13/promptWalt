@@ -51,15 +51,15 @@ export function LandingPage() {
       {/* Floating Mockup (Pure CSS / DOM) */}
       <section className="px-6 pb-32">
         <div className="max-w-6xl mx-auto relative perspective-1000">
-          <div className="relative rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl shadow-2xl overflow-hidden aspect-[16/9] animate-in fade-in zoom-in-95 duration-1000 delay-300 ease-out fill-mode-both transform-gpu hover:scale-[1.01] transition-transform duration-500">
+          <div className="relative rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl shadow-2xl overflow-hidden aspect-square md:aspect-[16/9] animate-in fade-in zoom-in-95 duration-1000 delay-300 ease-out fill-mode-both transform-gpu hover:scale-[1.01] transition-transform duration-500">
             {/* Fake OS Header */}
-            <div className="h-10 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center px-4 gap-2 bg-zinc-100/50 dark:bg-zinc-950/50">
-              <div className="w-3 h-3 rounded-full bg-red-400"></div>
-              <div className="w-3 h-3 rounded-full bg-amber-400"></div>
-              <div className="w-3 h-3 rounded-full bg-green-400"></div>
+            <div className="h-8 md:h-10 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center px-4 gap-2 bg-zinc-100/50 dark:bg-zinc-950/50 shrink-0">
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-400"></div>
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-amber-400"></div>
+              <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-400"></div>
             </div>
             {/* Fake App Content */}
-            <div className="flex h-full">
+            <div className="flex h-[calc(100%-2rem)] md:h-[calc(100%-2.5rem)]">
               {/* Fake Sidebar */}
               <div className="w-48 border-r border-zinc-200/50 dark:border-zinc-800/50 p-4 hidden md:block">
                 <div className="h-4 w-24 font-bold text-sm mb-6">PromptWalt</div>
@@ -71,7 +71,7 @@ export function LandingPage() {
                 </div>
               </div>
               {/* Fake Grid */}
-              <div className="flex-1 p-6 grid grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="flex-1 p-4 md:p-6 grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 overflow-hidden content-start">
                 {[
                   { title: "React Component Gen", cat: "Code", color: "bg-amber-400", desc: "Create a functional React component..." },
                   { title: "Blog Post Intro", cat: "Writing", color: "bg-blue-400", desc: "Write a compelling introduction for..." },
@@ -80,13 +80,13 @@ export function LandingPage() {
                   { title: "Python Script Debug", cat: "Code", color: "bg-amber-400", desc: "Find the memory leak in this script..." },
                   { title: "Cyberpunk City", cat: "Art", color: "bg-emerald-400", desc: "Neon lit cyberpunk street in..." }
                 ].map((item, i) => (
-                  <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 shadow-sm flex flex-col gap-3 group hover:border-primary/50 transition-colors">
-                    <div className="h-28 bg-zinc-50 dark:bg-zinc-950 rounded-lg w-full flex p-3 text-[10px] text-zinc-400 font-mono relative overflow-hidden border border-zinc-100 dark:border-zinc-800">
+                  <div key={i} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-3 md:p-4 shadow-sm flex flex-col gap-2 md:gap-3 group hover:border-primary/50 transition-colors">
+                    <div className="h-20 md:h-28 bg-zinc-50 dark:bg-zinc-950 rounded-lg w-full flex p-2 md:p-3 text-[9px] md:text-[10px] text-zinc-400 font-mono relative overflow-hidden border border-zinc-100 dark:border-zinc-800">
                       {item.desc}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${item.color}`}></div>
-                      <div className="font-semibold text-xs truncate">{item.title}</div>
+                    <div className="flex items-center gap-2 mt-auto">
+                      <div className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full ${item.color} shrink-0`}></div>
+                      <div className="font-semibold text-[10px] md:text-xs truncate">{item.title}</div>
                     </div>
                   </div>
                 ))}

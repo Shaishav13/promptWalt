@@ -2,8 +2,14 @@ import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
-import { Copy } from 'lucide-react'
+import { Copy, MoreHorizontal, Download } from 'lucide-react'
 import Link from 'next/link'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 // We create a separate client component for the copy button for interactivity
 import { PublicCopyButton } from '@/components/public-copy-button'
@@ -55,11 +61,32 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
               Shared via <Link href="/" className="font-semibold text-primary">PromptWalt</Link>
             </div>
           </div>
-          {prompt.model_used && (
-            <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-sm font-medium">
-              {prompt.model_used}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {prompt.model_used && (
+              <span className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-sm font-medium">
+                {prompt.model_used}
+              </span>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 h-9 w-9 shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                <MoreHorizontal className="h-5 w-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <form action={async () => {
+                  'use server'
+                  const { cloneSharedPrompt } = await import('@/app/actions')
+                  await cloneSharedPrompt(token)
+                }}>
+                  <DropdownMenuItem className="p-0 overflow-hidden">
+                    <button type="submit" className="w-full flex items-center px-1.5 py-1 cursor-pointer">
+                      <Download className="mr-2 h-4 w-4" />
+                      Save to Library
+                    </button>
+                  </DropdownMenuItem>
+                </form>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row h-auto md:h-[600px]">
@@ -82,11 +109,14 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
           </div>
 
           {/* Details */}
-          <div className="w-full md:w-1/2 flex flex-col h-full bg-white dark:bg-zinc-900">
+          <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 bg-white dark:bg-zinc-900">
             <ScrollArea className="flex-1 p-6">
               <div className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-semibold mb-3">Prompt</h4>
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-semibold">Prompt</h4>
+                    <PublicCopyButton text={prompt.prompt_text} />
+                  </div>
                   <div className="relative group/copy">
                     <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap font-mono">
                       {prompt.prompt_text}
@@ -108,20 +138,6 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                 )}
               </div>
             </ScrollArea>
-            
-            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex justify-end gap-3">
-              <PublicCopyButton text={prompt.prompt_text} />
-              
-              <form action={async () => {
-                'use server'
-                const { cloneSharedPrompt } = await import('@/app/actions')
-                await cloneSharedPrompt(token)
-              }}>
-                <Button type="submit" variant="default">
-                  Save to my Library
-                </Button>
-              </form>
-            </div>
           </div>
         </div>
       </div>

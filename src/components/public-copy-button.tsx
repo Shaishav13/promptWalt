@@ -16,9 +16,14 @@ export function PublicCopyButton({ text }: { text: string }) {
   }
 
   return (
-    <Button onClick={handleCopy} className="gap-2 w-full md:w-auto text-base h-12 md:h-10">
-      {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-      Copy Prompt
+    <Button 
+      onClick={handleCopy} 
+      size="sm"
+      variant="ghost"
+      className="h-8 gap-1.5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+    >
+      {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
+      <span className="text-xs">Copy</span>
     </Button>
   )
 }
