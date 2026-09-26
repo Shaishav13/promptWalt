@@ -116,11 +116,12 @@ export function ImportDataDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger render={
         <Button variant="ghost" className="w-full justify-start mt-1 text-primary hover:text-primary hover:bg-primary/10">
           <Download className="mr-2 h-4 w-4" />
           Import Data
         </Button>
+      }>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col p-0">
         <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
