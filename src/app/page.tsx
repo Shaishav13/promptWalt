@@ -14,6 +14,7 @@ import { Filters } from '@/components/filters'
 import { Sidebar } from '@/components/sidebar'
 import { MobileSidebar } from '@/components/mobile-sidebar'
 import { FavoriteButton } from '@/components/favorite-button'
+import { LandingPage } from '@/components/landing-page'
 import Link from 'next/link'
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ category?: string, q?: string, model?: string, tag?: string, favorites?: string }> }) {
@@ -21,7 +22,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login')
+    return <LandingPage />
   }
 
   // Resolve search parameters for Next.js 15+ (App Router standard)
