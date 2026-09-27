@@ -55,50 +55,68 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col">
-      <div className="flex-1 w-full max-w-5xl mx-auto px-6 py-12 md:py-20">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col relative overflow-hidden">
+      {/* Background glow */}
+      <div className="absolute top-0 left-1/2 w-full -translate-x-1/2 h-[500px] bg-purple-500/10 dark:bg-purple-600/10 blur-[120px] rounded-[100%] pointer-events-none -z-10" />
+
+      <div className="flex-1 w-full max-w-4xl mx-auto px-6 py-12 md:py-20 relative z-10">
         <Link
           href="/settings"
-          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-12"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
         </Link>
 
-        <div className="flex items-center gap-4 mb-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50 dark:bg-purple-500/10">
-            <HelpCircle className="h-6 w-6 text-purple-500" />
+        <div className="flex flex-col items-center text-center mb-16">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg shadow-purple-500/20 mb-6">
+            <HelpCircle className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-2xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">FAQ</h1>
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50 mb-4">
+            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-indigo-500">Questions</span>
+          </h1>
+          <p className="text-base md:text-lg text-zinc-500 dark:text-zinc-400 max-w-2xl">
+            Everything you need to know about PromptWalt and how it helps you manage your AI workflows.
+          </p>
         </div>
-        <p className="text-sm text-zinc-500 mb-12 md:ml-16">Frequently asked questions about PromptWalt</p>
 
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800">
+        <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div key={i}>
+            <div
+              key={i}
+              className={`rounded-2xl border transition-all duration-300 ${openIndex === i ? 'border-purple-200 dark:border-purple-500/30 bg-purple-50/50 dark:bg-purple-500/5 shadow-md shadow-purple-500/5' : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700'}`}
+            >
               <button
                 onClick={() => toggle(i)}
-                className="w-full flex items-center justify-between px-6 py-6 md:px-10 md:py-7 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group"
+                className="w-full flex items-center justify-between px-6 py-5 md:px-8 md:py-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-2xl group"
               >
-                <h2 className="text-base md:text-xl font-semibold text-zinc-900 dark:text-zinc-100 pr-6">
-                  {i + 1}. {faq.question}
+                <h2 className={`text-base md:text-lg font-semibold transition-colors ${openIndex === i ? 'text-purple-600 dark:text-purple-400' : 'text-zinc-900 dark:text-zinc-100 group-hover:text-purple-600 dark:group-hover:text-purple-400'} pr-6`}>
+                  {faq.question}
                 </h2>
-                <ChevronDown
-                  className={`h-5 w-5 shrink-0 text-zinc-400 transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''}`}
-                />
-              </button>
-              {openIndex === i && (
-                <div className="px-6 pb-6 md:px-10 md:pb-8">
-                  <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed md:leading-loose max-w-4xl">
-                    {faq.answer}
-                  </p>
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${openIndex === i ? 'bg-purple-100 dark:bg-purple-500/20' : 'bg-zinc-100 dark:bg-zinc-800 group-hover:bg-purple-50 dark:group-hover:bg-purple-500/10'}`}>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-300 ${openIndex === i ? 'rotate-180 text-purple-600 dark:text-purple-400' : 'text-zinc-500 group-hover:text-purple-600 dark:group-hover:text-purple-400'}`}
+                  />
                 </div>
-              )}
+              </button>
+              <div
+                className="grid transition-all duration-300 ease-in-out"
+                style={{ gridTemplateRows: openIndex === i ? '1fr' : '0fr' }}
+              >
+                <div className="overflow-hidden">
+                  <div className="px-6 pb-5 md:px-8 md:pb-6 pt-0">
+                    <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800 mb-5" />
+                    <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        <p className="text-sm text-zinc-400 text-center mt-12 mb-8">
+        <p className="text-sm text-zinc-400 text-center mt-16 mb-8 font-medium">
           © {new Date().getFullYear()} PromptWalt. All rights reserved.
         </p>
       </div>

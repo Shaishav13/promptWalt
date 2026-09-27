@@ -4,11 +4,17 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Pencil, Key, CheckCircle2, BookMarked, Layers, Star } from 'lucide-react'
+import { Loader2, Pencil, Key, CheckCircle2, BookMarked, Layers, Star, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { updateProfile, updatePassword } from '@/app/actions'
 import { useRouter } from 'next/navigation'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 interface Props {
   initialName: string
@@ -94,24 +100,21 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setActiveSection(activeSection === 'edit' ? null : 'edit')}
-              className="gap-1.5"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setActiveSection(activeSection === 'password' ? null : 'password')}
-              className="gap-1.5"
-            >
-              <Key className="h-3.5 w-3.5" />
-              Password
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100">
+                <Menu className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => setActiveSection(activeSection === 'edit' ? null : 'edit')} className="cursor-pointer">
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveSection(activeSection === 'password' ? null : 'password')} className="cursor-pointer">
+                  <Key className="mr-2 h-4 w-4" />
+                  <span>Change Password</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
