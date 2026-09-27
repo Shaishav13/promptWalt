@@ -93,8 +93,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     let signedUrls: string[] = []
     if (prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
       for (const url of prompt.demo_image_urls) {
-        const { data } = await supabase.storage.from('prompt-images').createSignedUrl(url, 3600)
-        if (data?.signedUrl) signedUrls.push(data.signedUrl)
+        const { data } = supabase.storage.from('prompt-images').getPublicUrl(url)
+        if (data?.publicUrl) signedUrls.push(data.publicUrl)
       }
     }
     return { ...prompt, signedUrls }

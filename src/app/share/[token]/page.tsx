@@ -40,13 +40,13 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
     notFound()
   }
 
-  // Fetch signed URLs for images if allowed
+  // Fetch public URLs for images if allowed
   const includeImages = !token.endsWith('-noimg')
   let signedUrls: string[] = []
   if (includeImages && prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
     for (const url of prompt.demo_image_urls) {
-      const { data } = await supabase.storage.from('prompt-images').createSignedUrl(url, 3600)
-      if (data?.signedUrl) signedUrls.push(data.signedUrl)
+      const { data } = supabase.storage.from('prompt-images').getPublicUrl(url)
+      if (data?.publicUrl) signedUrls.push(data.publicUrl)
     }
   }
 
