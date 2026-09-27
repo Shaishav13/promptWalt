@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import Link from 'next/link'
 import { ShieldCheck, ChevronRight, Database } from 'lucide-react'
 import { ImportDataDialog } from '@/components/import-data-dialog'
+import { ImportHelpDialog } from '@/components/import-help-dialog'
 import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 
 export default async function SettingsPage() {
@@ -53,7 +54,10 @@ export default async function SettingsPage() {
                     <Database className="h-4 w-4 text-green-500" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Import Data</p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Import Data</p>
+                      <ImportHelpDialog />
+                    </div>
                     <p className="text-xs text-zinc-400 mt-0.5">Import your ChatGPT history</p>
                   </div>
                 </div>
