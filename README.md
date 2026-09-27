@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PromptWalt 🚀
 
-## Getting Started
+PromptWalt is a modern, sleek, and highly responsive web application designed for AI enthusiasts to store, organize, and share their best AI prompts. Built with Next.js 16, Supabase, and Tailwind CSS.
 
-First, run the development server:
+## Features ✨
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **Prompt Library**: Store your AI prompts with tags, categories, and specific models used.
+*   **Public Sharing**: Instantly generate public share links for your best prompts.
+*   **Demo Images**: Attach demo images to show exactly what a prompt generates.
+*   **ChatGPT Import**: Easily upload your `conversations.json` from ChatGPT to back up your entire chat history automatically.
+*   **Full-Text Search**: Instantly find any prompt in your library using our lightning-fast search bar.
+*   **Versioning**: Automatically saves old versions of your prompts when you edit them so you never lose the "one that worked before".
+*   **Dark Mode**: A beautiful, native dark mode built in.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack 🛠️
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **Frontend**: Next.js 16 (App Router), React, Tailwind CSS
+*   **UI Components**: shadcn/ui, Radix UI, Lucide Icons
+*   **Backend / Database**: Supabase (PostgreSQL, Auth, Storage)
+*   **Deployment**: Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Local Development 💻
 
-## Learn More
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Copy `.env.example` to `.env.local` and add your Supabase keys.
+4. Run the development server: `npm run dev`
+5. Open [http://localhost:3000](http://localhost:3000)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with ❤️ by Shaishav13*
