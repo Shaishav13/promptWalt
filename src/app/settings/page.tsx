@@ -4,7 +4,7 @@ import { Sidebar } from '@/components/sidebar'
 import { MobileSidebar } from '@/components/mobile-sidebar'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import Link from 'next/link'
-import { ShieldCheck, ChevronRight, Database } from 'lucide-react'
+import { ShieldCheck, ChevronRight, Database, HelpCircle } from 'lucide-react'
 import { ImportDataDialog } from '@/components/import-data-dialog'
 import { ImportHelpDialog } from '@/components/import-help-dialog'
 import { DeleteAccountDialog } from '@/components/delete-account-dialog'
@@ -37,6 +37,21 @@ export default async function SettingsPage() {
                     <div>
                       <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Privacy Policy</p>
                       <p className="text-xs text-zinc-400 mt-0.5">How we handle your data</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors" />
+                </div>
+              </Link>
+              <div className="border-t border-zinc-100 dark:border-zinc-800" />
+              <Link href="/faq">
+                <div className="flex items-center justify-between px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors group">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 dark:bg-purple-500/10">
+                      <HelpCircle className="h-4 w-4 text-purple-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">FAQ</p>
+                      <p className="text-xs text-zinc-400 mt-0.5">Frequently asked questions</p>
                     </div>
                   </div>
                   <ChevronRight className="h-4 w-4 text-zinc-300 group-hover:text-zinc-500 dark:text-zinc-600 dark:group-hover:text-zinc-400 transition-colors" />
