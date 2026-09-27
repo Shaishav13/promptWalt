@@ -3,9 +3,9 @@ import { logout } from '@/app/actions'
 import { Button } from '@/components/ui/button'
 import { LogOut, User, Hexagon, Menu, Settings } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { NewCategoryDialog } from '@/components/new-category-dialog'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { CategoryGroup } from '@/components/category-group'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -43,33 +43,16 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
                 Favorites
               </Button>
             </Link>
-            <Link href="/settings">
-              <Button variant="ghost" className="w-full justify-start">
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </Button>
-            </Link>
-            <div className="pt-4 pb-2 px-4 text-xs font-semibold text-zinc-500 uppercase flex items-center justify-between">
-              Categories
-              <NewCategoryDialog />
-            </div>
-            <Link 
-              href="/"
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${!activeCategoryId && !isFavoritesView ? 'bg-primary/10 text-primary' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-            >
-              <Hexagon className="h-4 w-4" />
-              All Prompts
-            </Link>
-            {categories?.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/?category=${cat.id}`}
-                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${activeCategoryId === cat.id ? 'bg-primary/10 text-primary' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-              >
-                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: cat.color || '#3b82f6' }} />
-                {cat.name}
+            <CategoryGroup categories={categories} activeCategoryId={activeCategoryId} isFavoritesView={isFavoritesView} />
+            
+            <div className="pt-2">
+              <Link href="/settings">
+                <Button variant="ghost" className="w-full justify-start text-zinc-600 dark:text-zinc-400">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </Button>
               </Link>
-            ))}
+            </div>
           </div>
         </div>
         <div className="border-t p-4 flex items-center justify-between mt-auto shrink-0">
