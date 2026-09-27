@@ -15,6 +15,7 @@ import { Sidebar } from '@/components/sidebar'
 import { MobileSidebar } from '@/components/mobile-sidebar'
 import { FavoriteButton } from '@/components/favorite-button'
 import { LandingPage } from '@/components/landing-page'
+import { EmptyState } from '@/components/empty-state'
 import Link from 'next/link'
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ category?: string, q?: string, model?: string, tag?: string, favorites?: string }> }) {
@@ -82,7 +83,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
   }
 
   if (searchQuery) {
-    query = query.ilike('prompt_text', `%${searchQuery}%`)
+    // Full-text search across both title and the prompt body
+    query = query.or(`title.ilike.%${searchQuery}%,prompt_text.ilike.%${searchQuery}%`)
   }
 
   const { data: prompts } = await query.order('created_at', { ascending: false })
@@ -133,12 +135,15 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
 
         {/* Grid View */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-            {promptsWithUrls.length === 0 ? (
-              <div className="flex h-64 items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
-                <p className="text-sm text-zinc-500">No prompts yet.</p>
-              </div>
-            ) : (
+          {allUserPrompts?.length === 0 ? (
+            <EmptyState categories={categories || []} />
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+              {promptsWithUrls.length === 0 ? (
+                <div className="col-span-full flex h-64 items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+                  <p className="text-sm text-zinc-500">No matching prompts found.</p>
+                </div>
+              ) : (
               promptsWithUrls.map((prompt) => (
                 <PromptDetailDialog key={prompt.id} prompt={prompt} categories={categories || []}>
                   {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
@@ -191,6 +196,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
               ))
             )}
           </div>
+          )}
         </div>
       </main>
     </div>

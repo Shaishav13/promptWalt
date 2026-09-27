@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import Link from 'next/link'
 import { ShieldCheck, ChevronRight, Database } from 'lucide-react'
 import { ImportDataDialog } from '@/components/import-data-dialog'
+import { DeleteAccountDialog } from '@/components/delete-account-dialog'
 
 export default async function SettingsPage() {
   const supabase = await createClient()
@@ -58,6 +59,21 @@ export default async function SettingsPage() {
                 </div>
                 <div className="flex-shrink-0">
                   <ImportDataDialog />
+                </div>
+              </div>
+            </div>
+            
+            <div className="rounded-xl border border-red-200 dark:border-red-900/30 bg-white dark:bg-zinc-900 overflow-hidden">
+              <div className="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-widest text-red-500 border-b border-red-100 dark:border-red-900/30">
+                Danger Zone
+              </div>
+              <div className="flex items-center justify-between px-4 py-4">
+                <div>
+                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">Delete Account</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">Permanently delete your account and all data</p>
+                </div>
+                <div className="flex-shrink-0">
+                  <DeleteAccountDialog />
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
-import { Search } from 'lucide-react'
+import { Search, X, ArrowRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -36,8 +36,8 @@ export function Filters({ models, tags }: { models: string[], tags: string[] }) 
     [searchParams]
   )
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
     router.push(`/?${createQueryString('q', searchValue)}`)
   }
 
@@ -46,12 +46,32 @@ export function Filters({ models, tags }: { models: string[], tags: string[] }) 
       <form onSubmit={handleSearch} className="relative flex-1 w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
         <Input
-          type="search"
+          type="text"
           placeholder="Search prompts..."
-          className="w-full bg-white dark:bg-zinc-950 pl-9 h-9"
+          className="w-full bg-white dark:bg-zinc-950 pl-9 pr-14 h-9"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
+        {searchValue && (
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center">
+            <button 
+              type="button" 
+              onClick={() => {
+                 setSearchValue('')
+                 router.push(`/?${createQueryString('q', '')}`)
+              }}
+              className="h-6 w-6 flex items-center justify-center text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors rounded hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <button 
+              type="submit" 
+              className="h-6 w-6 flex items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </form>
       
       <div className="flex items-center gap-2 w-full sm:w-auto">

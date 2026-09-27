@@ -80,6 +80,22 @@ export async function updatePrompt(id: string, formData: FormData) {
 
   const tags = tagsString ? tagsString.split(',').map(t => t.trim()) : []
 
+  // 1. Fetch current prompt to check if text changed
+  const { data: currentPrompt } = await supabase
+    .from('prompts')
+    .select('prompt_text')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single()
+
+  if (currentPrompt && currentPrompt.prompt_text !== promptText) {
+    // 2. Save the old version to history
+    await supabase.from('prompt_versions').insert({
+      prompt_id: id,
+      prompt_text: currentPrompt.prompt_text
+    })
+  }
+
   const { error: updateError } = await supabase.from('prompts').update({
     prompt_text: promptText,
     model_used: modelUsed,
@@ -267,5 +283,67 @@ export async function bulkInsertPrompts(prompts: { prompt_text: string, title: s
 
   const { revalidatePath } = await import('next/cache')
   revalidatePath('/')
+  return { success: true }
+}
+
+export async function getPromptVersions(promptId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { data, error } = await supabase
+    .from('prompt_versions')
+    .select('id, prompt_text, created_at')
+    .eq('prompt_id', promptId)
+    .order('created_at', { ascending: false })
+
+  if (error) return { error: error.message }
+  return { versions: data }
+}
+
+export async function logPromptUsage(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { data: prompt } = await supabase.from('prompts').select('usage_count').eq('id', id).eq('user_id', user.id).single()
+  if (!prompt) return { error: 'Not found' }
+
+  const newCount = (prompt.usage_count || 0) + 1
+  const { error } = await supabase.from('prompts').update({
+    usage_count: newCount,
+    last_used_at: new Date().toISOString()
+  }).eq('id', id).eq('user_id', user.id)
+
+  if (error) return { error: error.message }
+  return { success: true, usage_count: newCount }
+}
+
+export async function deleteAccount(formData: FormData) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const password = formData.get('password') as string
+  if (!password) return { error: 'Password is required' }
+
+  // Verify password by attempting to sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password
+  })
+
+  if (signInError) {
+    return { error: 'Incorrect password' }
+  }
+
+  // Delete the account using the RPC
+  const { error: deleteError } = await supabase.rpc('delete_user')
+  
+  if (deleteError) return { error: deleteError.message }
+
+  // Logout
+  await supabase.auth.signOut()
+
   return { success: true }
 }

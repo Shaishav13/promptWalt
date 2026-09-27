@@ -1,0 +1,3 @@
+
+ALTER TABLE public.prompts ADD COLUMN usage_count INTEGER DEFAULT 0;
+ALTER TABLE public.prompts ADD COLUMN last_used_at TIMESTAMP WITH TIME ZONE;

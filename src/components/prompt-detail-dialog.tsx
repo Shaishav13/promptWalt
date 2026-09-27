@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Copy, Check, MoreVertical, Edit, Trash, Loader2, Share } from 'lucide-react'
+import { Copy, Check, MoreVertical, Edit, Trash, Loader2, Share, History } from 'lucide-react'
 import { toast } from 'sonner'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { updatePrompt, deletePrompt, createShareLink } from '@/app/actions'
+import { updatePrompt, deletePrompt, createShareLink, getPromptVersions, logPromptUsage } from '@/app/actions'
 
 interface PromptDetailDialogProps {
   children: React.ReactNode
@@ -35,8 +35,22 @@ interface PromptDetailDialogProps {
     signedUrls?: string[]
     created_at: string
     category_id?: string | null
+    usage_count?: number
+    last_used_at?: string
   }
   categories?: { id: string, name: string }[]
+}
+
+function getRelativeTime(dateString: string) {
+  const diff = Date.now() - new Date(dateString).getTime()
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor(diff / (1000 * 60 * 60))
+  const minutes = Math.floor(diff / (1000 * 60))
+  
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  if (minutes > 0) return `${minutes} min${minutes > 1 ? 's' : ''} ago`
+  return 'just now'
 }
 
 export function PromptDetailDialog({ children, prompt, categories = [] }: PromptDetailDialogProps) {
@@ -47,11 +61,32 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   const [isSharing, setIsSharing] = useState(false)
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [categoryId, setCategoryId] = useState<string>(prompt.category_id || "")
+  const [versions, setVersions] = useState<any[]>([])
+  
+  // Analytics State
+  const [usageCount, setUsageCount] = useState(prompt.usage_count || 0)
+  const [lastUsed, setLastUsed] = useState(prompt.last_used_at || null)
+
+  useEffect(() => {
+    if (open && !isEditing) {
+      getPromptVersions(prompt.id).then(res => {
+        if (res.versions) {
+          setVersions(res.versions)
+        }
+      })
+    }
+  }, [open, isEditing, prompt.id])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(prompt.prompt_text)
     setCopied(true)
     toast.success("Prompt copied to clipboard!")
+    
+    // Log usage and update state optimistically
+    setUsageCount(prev => prev + 1)
+    setLastUsed(new Date().toISOString())
+    logPromptUsage(prompt.id)
+    
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -227,6 +262,18 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                           <span className="text-xs">Copy</span>
                         </Button>
                       </div>
+                      
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-md text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                          Used {usageCount} time{usageCount !== 1 ? 's' : ''}
+                        </div>
+                        {lastUsed && (
+                          <div className="text-xs text-zinc-500">
+                            Last used {getRelativeTime(lastUsed)}
+                          </div>
+                        )}
+                      </div>
+
                       <div className="relative group/copy">
                         <div className="p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap">
                           {prompt.prompt_text}
@@ -242,6 +289,37 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                             <span key={tag} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                               {tag}
                             </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {versions.length > 0 && (
+                      <div className="pt-4 mt-6 border-t border-zinc-100 dark:border-zinc-800">
+                        <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                          <History className="h-4 w-4" /> Version History
+                        </h4>
+                        <div className="space-y-4">
+                          {versions.map((version) => (
+                            <div key={version.id} className="p-3 bg-zinc-50 dark:bg-zinc-900/30 rounded-md border border-zinc-100 dark:border-zinc-800">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs text-zinc-500">{new Date(version.created_at).toLocaleString()}</span>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-6 px-2 text-[10px]"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(version.prompt_text)
+                                    toast.success("Previous version copied!")
+                                  }}
+                                >
+                                  Copy
+                                </Button>
+                              </div>
+                              <div className="text-xs text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap line-clamp-3">
+                                {version.prompt_text}
+                              </div>
+                            </div>
                           ))}
                         </div>
                       </div>
