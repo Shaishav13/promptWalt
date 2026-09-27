@@ -20,7 +20,15 @@ import { toast } from 'sonner'
 import { createPrompt } from '@/app/actions'
 import { createClient } from '@/utils/supabase/client'
 
-export function NewPromptDialog({ categories = [] }: { categories?: { id: string, name: string }[] }) {
+export function NewPromptDialog({ 
+  categories = [],
+  triggerClassName,
+  triggerText = "New Prompt"
+}: { 
+  categories?: { id: string, name: string }[],
+  triggerClassName?: string,
+  triggerText?: string
+}) {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [fileNames, setFileNames] = useState<string[]>([])
@@ -92,9 +100,9 @@ export function NewPromptDialog({ categories = [] }: { categories?: { id: string
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 gap-2">
-        <Plus className="h-4 w-4" />
-        <span className="hidden sm:inline">New Prompt</span>
+      <DialogTrigger className={triggerClassName || "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 gap-2"}>
+        <Plus className={triggerClassName ? "w-5 h-5" : "h-4 w-4"} />
+        <span className={triggerClassName ? "" : "hidden sm:inline"}>{triggerText}</span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto flex flex-col">
         <form onSubmit={handleSubmit} className="flex flex-col gap-0">

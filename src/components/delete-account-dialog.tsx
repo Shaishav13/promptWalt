@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -41,8 +41,8 @@ export function DeleteAccountDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="destructive" size="sm">Delete Account</Button>
+      <DialogTrigger className={buttonVariants({ variant: "destructive", size: "sm" })}>
+        Delete Account
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

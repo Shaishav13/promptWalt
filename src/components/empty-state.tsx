@@ -34,11 +34,11 @@ export function EmptyState({ categories }: { categories: any[] }) {
           </ul>
           
           <div className="pt-4">
-            <NewPromptDialog categories={categories}>
-              <Button size="lg" className="w-full sm:w-auto h-12 px-8 rounded-full shadow-lg shadow-primary/20 gap-2">
-                <Plus className="w-5 h-5" /> Add Your First Prompt
-              </Button>
-            </NewPromptDialog>
+            <NewPromptDialog 
+              categories={categories} 
+              triggerClassName="inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 w-full sm:w-auto h-12 px-8 rounded-full shadow-lg shadow-primary/20 gap-2 text-base"
+              triggerText="Add Your First Prompt"
+            />
           </div>
         </div>
 
