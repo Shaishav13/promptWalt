@@ -90,31 +90,28 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row h-auto md:h-[600px]">
+        <div className="flex flex-col md:flex-row h-auto md:h-[650px]">
           {/* Images */}
-          <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-950 relative border-r border-zinc-100 dark:border-zinc-800">
+          <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-950 relative border-r border-zinc-100 dark:border-zinc-800 md:overflow-y-auto">
             {signedUrls.length > 0 ? (
-              <ScrollArea className="w-full h-full">
                 <div className="flex flex-col">
                   {signedUrls.map((url, i) => (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img key={i} src={url} alt={`${prompt.title} ${i+1}`} className="w-full h-auto object-cover" />
                   ))}
                 </div>
-              </ScrollArea>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center p-8 text-zinc-400 text-sm">
                 {!includeImages && prompt.demo_image_urls?.length > 0 
                   ? 'Demo image not shared' 
-                  : 'No demo images provided'}
+                  : 'No demo images attached to this prompt'}
               </div>
             )}
           </div>
 
           {/* Details */}
-          <div className="w-full md:w-1/2 flex flex-col h-full min-h-0 bg-white dark:bg-zinc-900">
-            <ScrollArea className="flex-1 p-6">
-              <div className="space-y-6">
+          <div className="w-full md:w-1/2 flex flex-col bg-white dark:bg-zinc-900 md:overflow-y-auto">
+            <div className="p-6 space-y-6">
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-semibold">Prompt</h4>
@@ -139,8 +136,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
                     </div>
                   </div>
                 )}
-              </div>
-            </ScrollArea>
+            </div>
           </div>
         </div>
       </div>
