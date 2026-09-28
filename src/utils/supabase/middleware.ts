@@ -38,6 +38,8 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/share') &&
     !request.nextUrl.pathname.startsWith('/forgot-password') &&
+    !request.nextUrl.pathname.startsWith('/privacy-policy') &&
+    !request.nextUrl.pathname.startsWith('/terms') &&
     !request.nextUrl.pathname.match(/\.(webmanifest|ico|png|jpg|jpeg|svg)$/)
   ) {
     // no user, potentially respond by redirecting the user to the login page

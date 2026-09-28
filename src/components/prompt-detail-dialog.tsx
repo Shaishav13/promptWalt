@@ -147,12 +147,9 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   return (
     <>
     <Dialog open={open} onOpenChange={setOpen}>
-      <div 
-        onClick={() => setOpen(true)}
-        className="cursor-pointer group relative overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 hover:ring-2 hover:ring-primary/50 transition-all text-left block w-full"
-      >
+      <DialogTrigger render={<div className="cursor-pointer h-full block w-full text-left" />} {...{ nativeButton: false } as any}>
         {children}
-      </div>
+      </DialogTrigger>
       <DialogContent closeButtonClassName="md:hidden" className="sm:max-w-[900px] w-[95vw] p-0 md:overflow-hidden overflow-y-auto max-h-[90vh] bg-white dark:bg-zinc-950 border-0 shadow-2xl flex flex-col">
         <div className={`flex flex-col ${prompt.signedUrls && prompt.signedUrls.length > 0 ? 'md:flex-row' : ''} md:h-[650px]`}>
           {/* Image Section */}
