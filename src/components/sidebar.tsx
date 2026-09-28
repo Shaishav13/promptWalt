@@ -41,14 +41,18 @@ export async function Sidebar({ activeCategoryId, isFavoritesView, activePath = 
           
           <CategoryGroup categories={categories} activeCategoryId={activeCategoryId} isFavoritesView={isFavoritesView} />
 
-          <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg mt-2">
-            <Box className="mr-3 h-[18px] w-[18px]" />
-            <span className="text-sm font-medium">Models</span>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg">
-            <BarChart2 className="mr-3 h-[18px] w-[18px]" />
-            <span className="text-sm font-medium">Analytics</span>
-          </Button>
+          <Link href="/models">
+            <Button variant="ghost" className={`w-full justify-start h-10 px-3 rounded-lg ${activePath === '/models' ? 'bg-white shadow-sm text-zinc-900 dark:bg-[#1a1b23] dark:text-indigo-50 dark:shadow-none' : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5'} mt-2`}>
+              <Box className={`mr-3 h-[18px] w-[18px] ${activePath === '/models' ? 'dark:text-indigo-400' : ''}`} />
+              <span className="text-sm font-medium">Models</span>
+            </Button>
+          </Link>
+          <Link href="/analytics">
+            <Button variant="ghost" className={`w-full justify-start h-10 px-3 rounded-lg ${activePath === '/analytics' ? 'bg-white shadow-sm text-zinc-900 dark:bg-[#1a1b23] dark:text-indigo-50 dark:shadow-none' : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5'}`}>
+              <BarChart2 className={`mr-3 h-[18px] w-[18px] ${activePath === '/analytics' ? 'dark:text-indigo-400' : ''}`} />
+              <span className="text-sm font-medium">Analytics</span>
+            </Button>
+          </Link>
           <Link href="/settings">
             <Button variant="ghost" className={`w-full justify-start h-10 px-3 rounded-lg ${activePath === '/settings' ? 'bg-white shadow-sm text-zinc-900 dark:bg-[#1a1b23] dark:text-indigo-50 dark:shadow-none' : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5'}`}>
               <Settings className={`mr-3 h-[18px] w-[18px] ${activePath === '/settings' ? 'dark:text-indigo-400' : ''}`} />

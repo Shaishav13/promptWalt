@@ -48,14 +48,18 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
             
             <CategoryGroup categories={categories} activeCategoryId={activeCategoryId} isFavoritesView={isFavoritesView} />
             
-            <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg mt-2">
-              <Box className="mr-3 h-[18px] w-[18px]" />
-              <span className="text-sm font-medium">Models</span>
-            </Button>
-            <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg">
-              <BarChart2 className="mr-3 h-[18px] w-[18px]" />
-              <span className="text-sm font-medium">Analytics</span>
-            </Button>
+            <Link href="/models">
+              <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg mt-2">
+                <Box className="mr-3 h-[18px] w-[18px]" />
+                <span className="text-sm font-medium">Models</span>
+              </Button>
+            </Link>
+            <Link href="/analytics">
+              <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg">
+                <BarChart2 className="mr-3 h-[18px] w-[18px]" />
+                <span className="text-sm font-medium">Analytics</span>
+              </Button>
+            </Link>
             <Link href="/settings">
               <Button variant="ghost" className="w-full justify-start h-10 px-3 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5">
                 <Settings className="mr-3 h-[18px] w-[18px]" />
