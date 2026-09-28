@@ -23,15 +23,26 @@ interface Props {
   totalPrompts: number
   totalFavorites: number
   totalCategories: number
+  initialAvatarUrl?: string
 }
 
-export function ProfileClient({ initialName, initialEmail, memberSince, totalPrompts, totalFavorites, totalCategories }: Props) {
+export function ProfileClient({ initialName, initialEmail, memberSince, totalPrompts, totalFavorites, totalCategories, initialAvatarUrl }: Props) {
   const router = useRouter()
   const [activeSection, setActiveSection] = useState<'edit' | 'password' | null>(null)
 
   const [name, setName] = useState(initialName)
   const [email, setEmail] = useState(initialEmail)
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${initialEmail}`)
   const [isSavingProfile, setIsSavingProfile] = useState(false)
+
+  const avatarOptions = [
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${email}`,
+    `https://api.dicebear.com/7.x/lorelei/svg?seed=${email}`,
+    `https://api.dicebear.com/7.x/micah/svg?seed=${email}`,
+    `https://api.dicebear.com/7.x/notionists/svg?seed=${email}`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=${email}`,
+  ]
 
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -46,6 +57,7 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
     const fd = new FormData()
     fd.append('name', name)
     fd.append('email', email)
+    fd.append('avatar_url', avatarUrl)
     const res = await updateProfile(fd)
     setIsSavingProfile(false)
     if (res?.error) {
@@ -88,8 +100,9 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
       {/* Avatar + Identity */}
       <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl font-bold shrink-0 select-none">
-            {initials}
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xl font-bold shrink-0 select-none overflow-hidden border-2 border-white dark:border-zinc-800 shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 truncate">{name}</p>
@@ -107,11 +120,11 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem onClick={() => setActiveSection(activeSection === 'edit' ? null : 'edit')} className="cursor-pointer">
                   <Pencil className="mr-2 h-4 w-4" />
-                  <span>Edit Profile</span>
+                  <span>{activeSection === 'edit' ? 'Close Edit Profile' : 'Edit Profile'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setActiveSection(activeSection === 'password' ? null : 'password')} className="cursor-pointer">
                   <Key className="mr-2 h-4 w-4" />
-                  <span>Change Password</span>
+                  <span>{activeSection === 'password' ? 'Close Change Password' : 'Change Password'}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -147,6 +160,22 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
                 required
               />
               <p className="text-xs text-zinc-400">If you change your email, a confirmation link will be sent to the new address.</p>
+            </div>
+            <div className="space-y-3 pt-2">
+              <Label className="text-xs font-medium text-zinc-600 dark:text-zinc-400">Choose Avatar</Label>
+              <div className="flex flex-wrap gap-3">
+                {avatarOptions.map((opt, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setAvatarUrl(opt)}
+                    className={`h-12 w-12 rounded-full overflow-hidden border-2 transition-all ${avatarUrl === opt ? 'border-blue-500 shadow-md ring-2 ring-blue-500/20' : 'border-zinc-200 dark:border-zinc-700 hover:border-blue-400'}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={opt} alt={`Avatar option ${i}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="flex justify-end gap-2 pt-1">
               <Button type="button" variant="ghost" size="sm" onClick={() => setActiveSection(null)}>Cancel</Button>
@@ -204,7 +233,7 @@ export function ProfileClient({ initialName, initialEmail, memberSince, totalPro
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: 'Total Prompts', value: totalPrompts, icon: BookMarked, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10', href: '/' },
-          { label: 'Favorites', value: totalFavorites, icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-500/10', href: '/?favorites=true' },
+          { label: 'Favorites', value: totalFavorites, icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50 dark:bg-yellow-500/10', href: '/?favorites' },
           { label: 'Categories', value: totalCategories, icon: Layers, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10', href: null },
         ].map(({ label, value, icon: Icon, color, bg, href }) => {
           const card = (

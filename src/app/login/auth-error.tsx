@@ -11,7 +11,16 @@ export function AuthError({ error }: { error?: string }) {
 
   useEffect(() => {
     if (error) {
-      toast.error(error)
+      let friendlyError = error;
+      if (error === 'Invalid login credentials') {
+        friendlyError = 'Invalid email or password. Please try again.';
+      } else if (error === 'Email not confirmed') {
+        friendlyError = 'Please verify your email address before logging in.';
+      } else if (error === 'User already registered') {
+        friendlyError = 'An account with this email already exists.';
+      }
+      
+      toast.error(friendlyError)
       // Clear the error from the URL so reloading doesn't show it again
       const params = new URLSearchParams(searchParams.toString())
       params.delete('error')

@@ -22,8 +22,26 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "PromptWalt",
-  description: "Personal Prompt Manager",
+  title: {
+    template: '%s | PromptWalt',
+    default: 'PromptWalt - Personal Prompt Manager',
+  },
+  description: 'Your personal vault for organizing, categorizing, and sharing your best AI prompts.',
+  openGraph: {
+    title: 'PromptWalt',
+    description: 'Your personal vault for organizing, categorizing, and sharing your best AI prompts.',
+    url: 'https://promptwalt.com',
+    siteName: 'PromptWalt',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

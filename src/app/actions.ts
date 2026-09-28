@@ -185,11 +185,17 @@ export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
   const name = formData.get('name') as string
   const email = formData.get('email') as string
+  const avatarUrl = formData.get('avatar_url') as string
   if (!name || !email) return { error: 'Name and email are required' }
+
+  const updateData: any = { display_name: name }
+  if (avatarUrl) {
+    updateData.avatar_url = avatarUrl
+  }
 
   const { error } = await supabase.auth.updateUser({
     email: email,
-    data: { display_name: name }
+    data: updateData
   })
 
   if (error) return { error: error.message }
