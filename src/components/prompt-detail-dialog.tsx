@@ -62,12 +62,16 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   const [shareDialogOpen, setShareDialogOpen] = useState(false)
   const [categoryId, setCategoryId] = useState<string>(prompt.category_id || "")
   const [versions, setVersions] = useState<any[]>([])
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
   
   // Analytics State
   const [usageCount, setUsageCount] = useState(prompt.usage_count || 0)
   const [lastUsed, setLastUsed] = useState(prompt.last_used_at || null)
 
   useEffect(() => {
+    if (open) {
+      setCurrentImageIndex(0)
+    }
     if (open && !isEditing) {
       getPromptVersions(prompt.id).then(res => {
         if (res.versions) {
@@ -154,15 +158,43 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
         <div className={`flex flex-col ${prompt.signedUrls && prompt.signedUrls.length > 0 ? 'md:flex-row' : ''} md:h-[650px]`}>
           {/* Image Section */}
           {prompt.signedUrls && prompt.signedUrls.length > 0 && (
-            <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0">
-              <div className="w-full h-full absolute inset-0 overflow-y-auto">
-                <div className="flex flex-col">
-                  {prompt.signedUrls.map((url, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img key={i} src={url} alt={`${prompt.title || 'Prompt image'} ${i+1}`} className="w-full h-auto object-cover" />
-                  ))}
-                </div>
-              </div>
+            <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-900 relative min-h-[250px] md:min-h-0 flex items-center justify-center overflow-hidden group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img 
+                src={prompt.signedUrls[currentImageIndex]} 
+                alt={`${prompt.title || 'Prompt image'} ${currentImageIndex+1}`} 
+                className="w-full h-full object-cover" 
+              />
+              
+              {prompt.signedUrls.length > 1 && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full h-8 w-8 backdrop-blur-sm transition-opacity border border-white/10"
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex((prev) => (prev > 0 ? prev - 1 : prompt.signedUrls!.length - 1)) }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full h-8 w-8 backdrop-blur-sm transition-opacity border border-white/10"
+                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex((prev) => (prev < prompt.signedUrls!.length - 1 ? prev + 1 : 0)) }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  </Button>
+                  
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/40 px-2.5 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                    {prompt.signedUrls.map((_, i) => (
+                      <div 
+                        key={i} 
+                        className={`w-1.5 h-1.5 rounded-full transition-all ${i === currentImageIndex ? 'bg-white w-3' : 'bg-white/50'}`} 
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           )}
           

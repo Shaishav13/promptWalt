@@ -38,33 +38,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
   const viewMode = resolvedParams?.view || 'grid'
   const sortMode = resolvedParams?.sort || 'newest'
 
-  // Fetch categories
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('name')
-
-  // Fetch all user prompts to extract unique models and tags
-  const { data: allUserPrompts } = await supabase
-    .from('prompts')
-    .select('model_used, tags')
-    .eq('user_id', user.id)
-
-  const uniqueModels = new Set<string>()
-  const uniqueTags = new Set<string>()
-
-  allUserPrompts?.forEach(p => {
-    if (p.model_used) uniqueModels.add(p.model_used)
-    if (p.tags && Array.isArray(p.tags)) {
-      p.tags.forEach((t: string) => uniqueTags.add(t))
-    }
-  })
-
-  const allModels = Array.from(uniqueModels).sort()
-  const allTags = Array.from(uniqueTags).sort()
-
-  // Fetch filtered prompts
+  // Setup filtered prompts query
   let query = supabase
     .from('prompts')
     .select('*')
@@ -91,18 +65,38 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     query = query.or(`title.ilike.%${searchQuery}%,prompt_text.ilike.%${searchQuery}%`)
   }
 
-  let prompts;
   if (sortMode === 'oldest') {
-    const { data } = await query.order('created_at', { ascending: true })
-    prompts = data
+    query = query.order('created_at', { ascending: true })
   } else if (sortMode === 'az') {
-    const { data } = await query.order('title', { ascending: true })
-    prompts = data
+    query = query.order('title', { ascending: true })
   } else {
     // newest
-    const { data } = await query.order('created_at', { ascending: false })
-    prompts = data
+    query = query.order('created_at', { ascending: false })
   }
+
+  // Execute queries in parallel
+  const [categoriesRes, allUserPromptsRes, promptsRes] = await Promise.all([
+    supabase.from('categories').select('*').eq('user_id', user.id).order('name'),
+    supabase.from('prompts').select('model_used, tags').eq('user_id', user.id),
+    query
+  ])
+
+  const categories = categoriesRes.data
+  const allUserPrompts = allUserPromptsRes.data
+  const prompts = promptsRes.data
+
+  const uniqueModels = new Set<string>()
+  const uniqueTags = new Set<string>()
+
+  allUserPrompts?.forEach(p => {
+    if (p.model_used) uniqueModels.add(p.model_used)
+    if (p.tags && Array.isArray(p.tags)) {
+      p.tags.forEach((t: string) => uniqueTags.add(t))
+    }
+  })
+
+  const allModels = Array.from(uniqueModels).sort()
+  const allTags = Array.from(uniqueTags).sort()
 
   const promptsWithUrls = await Promise.all((prompts || []).map(async (prompt) => {
     let signedUrls: string[] = []
@@ -153,7 +147,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         </header>
 
         {/* Opaque App Content Shell */}
-        <div className="flex-1 bg-white dark:bg-[#0e0f11] rounded-tl-3xl border-t border-l border-white dark:border-white/5 flex flex-col overflow-hidden shadow-2xl shadow-slate-200 dark:shadow-2xl">
+        <div className="flex-1 bg-white dark:bg-[#0e0f11] rounded-tl-3xl border-t border-l border-white dark:border-white/5 flex flex-col overflow-y-auto shadow-2xl shadow-slate-200 dark:shadow-2xl">
           {/* Header Section */}
         <div className="px-6 py-8 pb-4 shrink-0">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -174,7 +168,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         </div>
 
         {/* Dynamic View (Grid or List) */}
-        <div className="flex-1 overflow-y-auto px-6 pb-6 pt-0">
+        <div className="px-6 pb-6 pt-0">
           {allUserPrompts?.length === 0 ? (
             <EmptyState categories={categories || []} />
           ) : (
