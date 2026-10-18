@@ -26,17 +26,17 @@ export default async function SettingsPage() {
         {/* Main Area */}
         <div className="flex flex-1 flex-col overflow-hidden relative">
           {/* Header Bar */}
-          <header className="flex flex-col gap-4 p-4 md:h-20 md:flex-row md:items-center justify-between shrink-0 bg-transparent px-6">
-            <div className="flex items-center gap-4 w-full md:w-auto flex-1">
+          <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-4 sm:px-6 gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <MobileSidebar />
             </div>
-            <div className="flex items-center gap-4">
-              <Link href="/profile" className="hidden md:flex items-center gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+              <Link href="/profile" className="flex items-center gap-2 sm:gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 pr-2.5 sm:pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors">
                 <div className="w-6 h-6 rounded-full bg-indigo-500 overflow-hidden shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]">
+                <span className="text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[100px] sm:max-w-[120px]">
                   {user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                 </span>
               </Link>

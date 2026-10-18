@@ -146,39 +146,118 @@ export async function createCategory(formData: FormData) {
   return { success: true }
 }
 
-export async function createShareLink(promptId: string, includeImages: boolean = true) {
+export async function createShareLink(promptId: string, includeImages: boolean = true, forceNew: boolean = false) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  // Check if a token with the requested preference already exists
-  const { data: existingShares } = await supabase
-    .from('shares')
-    .select('share_token')
-    .eq('prompt_id', promptId)
-    .eq('shared_by', user.id)
+  // Check if an active token with the requested preference already exists
+  if (!forceNew) {
+    const { data: existingShares } = await supabase
+      .from('shares')
+      .select('id, share_token, is_active')
+      .eq('prompt_id', promptId)
+      .eq('shared_by', user.id)
 
-  if (existingShares) {
-    const match = existingShares.find(s => includeImages ? !s.share_token.endsWith('-noimg') : s.share_token.endsWith('-noimg'))
-    if (match) {
-      return { token: match.share_token }
+    if (existingShares && existingShares.length > 0) {
+      // Find matching share that isn't explicitly inactive
+      const activeShares = existingShares.filter((s: any) => s.is_active !== false)
+      const match = activeShares.find((s: any) => includeImages ? !s.share_token.endsWith('-noimg') : s.share_token.endsWith('-noimg'))
+      if (match) {
+        return { token: match.share_token }
+      }
     }
+  }
+
+  // If forceNew is requested, deactivate prior active shares for this prompt
+  if (forceNew) {
+    try {
+      await supabase
+        .from('shares')
+        .update({ is_active: false })
+        .eq('prompt_id', promptId)
+        .eq('shared_by', user.id)
+    } catch {}
   }
 
   // Create new share token
   const token = crypto.randomUUID() + (includeImages ? '' : '-noimg')
-  const { error } = await supabase.from('shares').insert({
+  
+  // Try inserting with is_active: true and view_count: 0
+  let insertError = null
+  const { error: err1 } = await supabase.from('shares').insert({
     prompt_id: promptId,
     shared_by: user.id,
-    share_token: token
+    share_token: token,
+    is_active: true,
+    view_count: 0
   })
 
-  if (error) return { error: error.message }
+  if (err1) {
+    // Fallback if is_active or view_count column isn't created yet in DB
+    const { error: err2 } = await supabase.from('shares').insert({
+      prompt_id: promptId,
+      shared_by: user.id,
+      share_token: token
+    })
+    insertError = err2
+  }
+
+  if (insertError) return { error: insertError.message }
 
   // Update prompt visibility if it was private
   await supabase.from('prompts').update({ visibility: 'shared' }).eq('id', promptId).eq('visibility', 'private')
 
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/analytics')
+  revalidatePath('/')
+
   return { token }
+}
+
+export async function disableShareLink(shareId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // 1. Fetch the share to get prompt_id
+  const { data: share, error: fetchError } = await supabase
+    .from('shares')
+    .select('id, prompt_id, share_token')
+    .eq('id', shareId)
+    .eq('shared_by', user.id)
+    .single()
+
+  if (fetchError || !share) return { error: 'Share link not found or unauthorized' }
+
+  // 2. Mark is_active = false so the token is immediately revoked
+  const { error: updateError } = await supabase
+    .from('shares')
+    .update({ is_active: false })
+    .eq('id', share.id)
+    .eq('shared_by', user.id)
+
+  if (updateError) {
+    // If is_active column does not exist in DB yet, delete the share row directly to guarantee access is revoked
+    await supabase.from('shares').delete().eq('id', share.id).eq('shared_by', user.id)
+  }
+
+  // 3. Check if any other active shares remain for this prompt
+  const { data: otherShares } = await supabase
+    .from('shares')
+    .select('id, is_active')
+    .eq('prompt_id', share.prompt_id)
+    .neq('id', share.id)
+
+  const hasRemainingActive = otherShares && otherShares.some((s: any) => s.is_active !== false)
+  if (!hasRemainingActive) {
+    await supabase.from('prompts').update({ visibility: 'private' }).eq('id', share.prompt_id).eq('user_id', user.id)
+  }
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/analytics')
+  revalidatePath('/')
+  return { success: true }
 }
 
 export async function updateProfile(formData: FormData) {

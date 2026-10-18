@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { logout } from '@/app/actions'
 import { Button } from '@/components/ui/button'
-import { LogOut, Home, SquarePen, Box, BarChart2, Menu, Settings } from 'lucide-react'
+import { LogOut, Home, SquarePen, Box, BarChart2, Menu, Settings, User } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
@@ -58,6 +58,12 @@ export async function MobileSidebar({ activeCategoryId, isFavoritesView }: { act
               <Button variant="ghost" className="w-full justify-start text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5 h-10 px-3 rounded-lg">
                 <BarChart2 className="mr-3 h-[18px] w-[18px]" />
                 <span className="text-sm font-medium">Analytics</span>
+              </Button>
+            </Link>
+            <Link href="/profile">
+              <Button variant="ghost" className="w-full justify-start h-10 px-3 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5">
+                <User className="mr-3 h-[18px] w-[18px]" />
+                <span className="text-sm font-medium">Profile</span>
               </Button>
             </Link>
             <Link href="/settings">

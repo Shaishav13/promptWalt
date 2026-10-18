@@ -21,13 +21,40 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   // 1. Find the share token
   const { data: shareData, error: shareError } = await supabase
     .from('shares')
-    .select('prompt_id')
+    .select('*')
     .eq('share_token', token)
     .single()
 
   if (shareError || !shareData) {
     notFound()
   }
+
+  // If the owner has disabled or revoked this specific link
+  if ((shareData as any).is_active === false) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#090a0f] flex flex-col items-center justify-center p-6 text-center font-sans">
+        <div className="max-w-md w-full bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl backdrop-blur-xl">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400 flex items-center justify-center mx-auto mb-4 border border-amber-500/20">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">Share Link Revoked</h2>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
+            This prompt link has been deactivated by its owner to protect their content from unauthorized access.
+          </p>
+          <Link href="/">
+            <Button className="rounded-full w-full">
+              Explore PromptWalt
+            </Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Increment view count safely
+  try {
+    await supabase.rpc('increment_share_view', { token })
+  } catch {}
 
   // 2. Fetch the prompt (bypassing RLS or relying on visibility = 'shared'/'public')
   const { data: prompt, error: promptError } = await supabase
