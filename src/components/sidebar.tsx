@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { logout } from '@/app/actions'
 import { Button } from '@/components/ui/button'
-import { LogOut, Home, SquarePen, Box, BarChart2, Settings } from 'lucide-react'
+import { LogOut, Home, SquarePen, Box, BarChart2, Settings, Compass } from 'lucide-react'
 import { CategoryGroup } from '@/components/category-group'
 import { ThemeToggle } from '@/components/theme-toggle'
 import Link from 'next/link'
@@ -36,6 +36,12 @@ export async function Sidebar({ activeCategoryId, isFavoritesView, activePath = 
             <Button variant="ghost" className={`w-full justify-start h-10 px-3 rounded-lg ${activePath === '/' && !isFavoritesView && !activeCategoryId ? 'bg-white shadow-sm text-zinc-900 dark:bg-[#1a1b23] dark:text-indigo-50 dark:shadow-none' : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5'}`}>
               <SquarePen className={`mr-3 h-[18px] w-[18px] ${activePath === '/' && !isFavoritesView && !activeCategoryId ? 'dark:text-indigo-400' : ''}`} />
               <span className="text-sm font-medium">Prompts</span>
+            </Button>
+          </Link>
+          <Link href="/explore">
+            <Button variant="ghost" className={`w-full justify-start h-10 px-3 rounded-lg ${activePath === '/explore' ? 'bg-white shadow-sm text-zinc-900 dark:bg-[#1a1b23] dark:text-indigo-50 dark:shadow-none' : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-white/5'}`}>
+              <Compass className={`mr-3 h-[18px] w-[18px] ${activePath === '/explore' ? 'dark:text-indigo-400 text-blue-600' : ''}`} />
+              <span className="text-sm font-medium">Explore</span>
             </Button>
           </Link>
           

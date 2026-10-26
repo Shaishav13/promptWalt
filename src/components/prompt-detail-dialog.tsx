@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Copy, Check, MoreVertical, Edit, Trash, Loader2, Share, History } from 'lucide-react'
+import { Copy, Check, MoreVertical, Edit, Trash, Loader2, Share, History, Lock, Globe } from 'lucide-react'
 import { toast } from 'sonner'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { updatePrompt, deletePrompt, createShareLink, getPromptVersions, logPromptUsage } from '@/app/actions'
+import { updatePrompt, deletePrompt, createShareLink, getPromptVersions, logPromptUsage, togglePromptVisibility } from '@/app/actions'
 
 interface PromptDetailDialogProps {
   children: React.ReactNode
@@ -37,6 +37,7 @@ interface PromptDetailDialogProps {
     category_id?: string | null
     usage_count?: number
     last_used_at?: string
+    visibility?: 'private' | 'shared' | 'public'
   }
   categories?: { id: string, name: string }[]
 }
@@ -63,10 +64,20 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
   const [categoryId, setCategoryId] = useState<string>(prompt.category_id || "")
   const [versions, setVersions] = useState<any[]>([])
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [visibility, setVisibility] = useState<string>(prompt.visibility || 'private')
+  const [isTogglingVisibility, setIsTogglingVisibility] = useState(false)
+  const [editVisibility, setEditVisibility] = useState<'private' | 'public'>((prompt.visibility === 'public') ? 'public' : 'private')
   
   // Analytics State
   const [usageCount, setUsageCount] = useState(prompt.usage_count || 0)
   const [lastUsed, setLastUsed] = useState(prompt.last_used_at || null)
+
+  useEffect(() => {
+    if (prompt.visibility) {
+      setVisibility(prompt.visibility)
+      setEditVisibility(prompt.visibility === 'public' ? 'public' : 'private')
+    }
+  }, [prompt.visibility])
 
   useEffect(() => {
     if (open) {
@@ -94,6 +105,20 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     setTimeout(() => setCopied(false), 2000)
   }
 
+  async function handleToggleVisibility() {
+    setIsTogglingVisibility(true)
+    const target = visibility === 'public' ? 'private' : 'public'
+    const res = await togglePromptVisibility(prompt.id, target)
+    setIsTogglingVisibility(false)
+    if (res?.error) {
+      toast.error(res.error)
+    } else {
+      setVisibility(target)
+      setEditVisibility(target)
+      toast.success(target === 'public' ? "Published to Explore community!" : "Made private (removed from Explore)")
+    }
+  }
+
   async function handleDelete() {
     if (!confirm("Are you sure you want to delete this prompt?")) return
     const res = await deletePrompt(prompt.id)
@@ -111,11 +136,13 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     
     try {
       const formData = new FormData(e.currentTarget)
+      formData.set('visibility', editVisibility)
       const res = await updatePrompt(prompt.id, formData)
 
       if (res?.error) {
         toast.error(res.error)
       } else {
+        setVisibility(editVisibility)
         toast.success("Prompt updated!")
         setIsEditing(false)
       }
@@ -204,9 +231,18 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
               <div className="flex justify-between items-start gap-4">
                 <div>
                   <DialogTitle className="text-xl text-left">{prompt.title || 'Untitled Prompt'}</DialogTitle>
-                  <DialogDescription className="mt-1 text-left">
-                    {prompt.model_used && <span className="inline-block px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-md text-xs mr-2">{prompt.model_used}</span>}
+                  <DialogDescription className="mt-1 text-left flex flex-wrap items-center gap-2">
+                    {prompt.model_used && <span className="inline-block px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md text-xs font-medium text-zinc-700 dark:text-zinc-300">{prompt.model_used}</span>}
                     <span className="text-xs text-zinc-500">{new Date(prompt.created_at).toLocaleDateString()}</span>
+                    {visibility === 'public' ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+                        <Globe className="w-3 h-3" /> Public in Explore
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-zinc-100 text-zinc-600 dark:bg-white/5 dark:text-zinc-400 border border-zinc-200 dark:border-white/10">
+                        <Lock className="w-3 h-3 text-amber-500" /> Private
+                      </span>
+                    )}
                   </DialogDescription>
                 </div>
                 {!isEditing && (
@@ -215,9 +251,19 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                       <MoreVertical className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={handleToggleVisibility} disabled={isTogglingVisibility}>
+                        {isTogglingVisibility ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : visibility === 'public' ? (
+                          <Lock className="mr-2 h-4 w-4 text-amber-500" />
+                        ) : (
+                          <Globe className="mr-2 h-4 w-4 text-blue-500" />
+                        )}
+                        {visibility === 'public' ? 'Make Private' : 'Publish to Explore'}
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={handleShareClick} disabled={isSharing}>
                         {isSharing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Share className="mr-2 h-4 w-4" />}
-                        Share
+                        Share Link
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setIsEditing(true)}>
                         <Edit className="mr-2 h-4 w-4" />
@@ -271,6 +317,36 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
                     <div>
                       <label className="text-sm font-semibold mb-2 block">Tags (Optional)</label>
                       <Input name="tags" defaultValue={prompt.tags?.join(', ')} placeholder="Comma separated" />
+                    </div>
+
+                    <div className="pt-2 border-t border-zinc-100 dark:border-white/5">
+                      <label className="text-sm font-semibold mb-2 block">Visibility & Explore</label>
+                      <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-100 dark:bg-white/5 rounded-xl border border-zinc-200 dark:border-white/10">
+                        <button
+                          type="button"
+                          onClick={() => setEditVisibility('private')}
+                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                            editVisibility === 'private'
+                              ? 'bg-white dark:bg-[#1a1b23] text-zinc-900 dark:text-white shadow-sm border border-zinc-200/50 dark:border-white/10'
+                              : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                          }`}
+                        >
+                          <Lock className={`w-3.5 h-3.5 ${editVisibility === 'private' ? 'text-amber-500' : ''}`} />
+                          <span>Private</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditVisibility('public')}
+                          className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                            editVisibility === 'public'
+                              ? 'bg-white dark:bg-[#1a1b23] text-blue-600 dark:text-blue-400 shadow-sm border border-blue-500/30 font-semibold'
+                              : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                          }`}
+                        >
+                          <Globe className={`w-3.5 h-3.5 ${editVisibility === 'public' ? 'text-blue-500' : ''}`} />
+                          <span>Public in Explore</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

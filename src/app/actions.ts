@@ -19,6 +19,7 @@ export async function createPrompt(formData: FormData) {
   const tagsString = formData.get('tags') as string
   const categoryId = formData.get('category_id') as string || null
   const imagePaths = formData.getAll('image_paths') as string[]
+  const visibility = (formData.get('visibility') as string) === 'public' ? 'public' : 'private'
 
   function generateTitle(text: string) {
     const segments = text.split(/[,.|\n]+/)
@@ -48,15 +49,35 @@ export async function createPrompt(formData: FormData) {
 
   const tags = tagsString ? tagsString.split(',').map(t => t.trim()) : []
 
-  const { error: insertError } = await supabase.from('prompts').insert({
+  const authorName = user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Community Creator'
+  const authorAvatar = user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email || user.id}`
+
+  let { error: insertError } = await supabase.from('prompts').insert({
     user_id: user.id,
     prompt_text: promptText,
     title,
     model_used: modelUsed,
     category_id: categoryId,
     tags,
-    demo_image_urls
+    demo_image_urls,
+    visibility,
+    author_name: authorName,
+    author_avatar: authorAvatar
   })
+
+  if (insertError && (insertError.message?.includes('author_name') || insertError.message?.includes('column'))) {
+    const fallback = await supabase.from('prompts').insert({
+      user_id: user.id,
+      prompt_text: promptText,
+      title,
+      model_used: modelUsed,
+      category_id: categoryId,
+      tags,
+      demo_image_urls,
+      visibility
+    })
+    insertError = fallback.error
+  }
 
   if (insertError) {
     return { error: insertError.message }
@@ -64,6 +85,7 @@ export async function createPrompt(formData: FormData) {
 
   const { revalidatePath } = await import('next/cache')
   revalidatePath('/')
+  revalidatePath('/explore')
   
   return { success: true }
 }
@@ -77,13 +99,14 @@ export async function updatePrompt(id: string, formData: FormData) {
   const modelUsed = formData.get('model_used') as string
   const tagsString = formData.get('tags') as string
   const categoryId = formData.get('category_id') as string || null
+  const visibilityInput = formData.get('visibility') as string
 
   const tags = tagsString ? tagsString.split(',').map(t => t.trim()) : []
 
   // 1. Fetch current prompt to check if text changed
   const { data: currentPrompt } = await supabase
     .from('prompts')
-    .select('prompt_text')
+    .select('prompt_text, visibility')
     .eq('id', id)
     .eq('user_id', user.id)
     .single()
@@ -96,12 +119,32 @@ export async function updatePrompt(id: string, formData: FormData) {
     })
   }
 
-  const { error: updateError } = await supabase.from('prompts').update({
+  const authorName = user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Community Creator'
+  const authorAvatar = user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email || user.id}`
+
+  const updatePayload: any = {
     prompt_text: promptText,
     model_used: modelUsed,
     category_id: categoryId,
     tags,
-  }).eq('id', id).eq('user_id', user.id)
+  }
+
+  if (visibilityInput === 'public' || visibilityInput === 'private') {
+    updatePayload.visibility = visibilityInput
+    if (visibilityInput === 'public') {
+      updatePayload.author_name = authorName
+      updatePayload.author_avatar = authorAvatar
+    }
+  }
+
+  let { error: updateError } = await supabase.from('prompts').update(updatePayload).eq('id', id).eq('user_id', user.id)
+
+  if (updateError && (updateError.message?.includes('author_name') || updateError.message?.includes('column'))) {
+    delete updatePayload.author_name
+    delete updatePayload.author_avatar
+    const fallback = await supabase.from('prompts').update(updatePayload).eq('id', id).eq('user_id', user.id)
+    updateError = fallback.error
+  }
 
   if (updateError) {
     return { error: updateError.message }
@@ -109,6 +152,97 @@ export async function updatePrompt(id: string, formData: FormData) {
 
   const { revalidatePath } = await import('next/cache')
   revalidatePath('/')
+  revalidatePath('/explore')
+  return { success: true }
+}
+
+export async function togglePromptVisibility(promptId: string, targetVisibility?: 'private' | 'public') {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { data: prompt, error: fetchError } = await supabase
+    .from('prompts')
+    .select('id, visibility, user_id')
+    .eq('id', promptId)
+    .eq('user_id', user.id)
+    .single()
+
+  if (fetchError || !prompt) return { error: 'Prompt not found or unauthorized' }
+
+  const newVisibility = targetVisibility || (prompt.visibility === 'public' ? 'private' : 'public')
+  const authorName = user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Community Creator'
+  const authorAvatar = user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email || user.id}`
+
+  const updateData: any = { visibility: newVisibility }
+  if (newVisibility === 'public') {
+    updateData.author_name = authorName
+    updateData.author_avatar = authorAvatar
+  }
+
+  let { error: updateError } = await supabase
+    .from('prompts')
+    .update(updateData)
+    .eq('id', promptId)
+    .eq('user_id', user.id)
+
+  if (updateError && (updateError.message?.includes('author_name') || updateError.message?.includes('column'))) {
+    delete updateData.author_name
+    delete updateData.author_avatar
+    const fallback = await supabase.from('prompts').update(updateData).eq('id', promptId).eq('user_id', user.id)
+    updateError = fallback.error
+  }
+
+  if (updateError) return { error: updateError.message }
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/')
+  revalidatePath('/explore')
+  revalidatePath('/analytics')
+  return { success: true, visibility: newVisibility }
+}
+
+export async function clonePublicPrompt(promptId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: 'unauthenticated', redirect: '/login?returnUrl=/explore' }
+  }
+
+  const { data: originalPrompt, error: fetchError } = await supabase
+    .from('prompts')
+    .select('*')
+    .eq('id', promptId)
+    .eq('visibility', 'public')
+    .single()
+
+  if (fetchError || !originalPrompt) {
+    return { error: 'Public prompt not found or no longer available' }
+  }
+
+  const { error: insertError } = await supabase.from('prompts').insert({
+    user_id: user.id,
+    prompt_text: originalPrompt.prompt_text,
+    title: originalPrompt.title ? `Copy of ${originalPrompt.title}` : 'Untitled Prompt',
+    model_used: originalPrompt.model_used,
+    tags: originalPrompt.tags,
+    demo_image_urls: originalPrompt.demo_image_urls,
+    visibility: 'private',
+    is_favorite: false
+  })
+
+  if (insertError) return { error: insertError.message }
+
+  // Increment usage count safely
+  try {
+    const currentUsage = originalPrompt.usage_count || 0
+    await supabase.from('prompts').update({ usage_count: currentUsage + 1 }).eq('id', promptId)
+  } catch {}
+
+  const { revalidatePath } = await import('next/cache')
+  revalidatePath('/')
+  revalidatePath('/explore')
+
   return { success: true }
 }
 

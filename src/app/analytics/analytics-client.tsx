@@ -32,6 +32,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { disableShareLink, createShareLink } from '@/app/actions'
+import { safeRandomUUID } from '@/utils/uuid'
 
 export interface AnalyticsPrompt {
   id: string
@@ -171,7 +172,7 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
       } else if (res?.token) {
         // Add new active share and keep old one as revoked
         const newShare: AnalyticsShare = {
-          id: crypto.randomUUID(),
+          id: safeRandomUUID(),
           prompt_id: promptId,
           share_token: res.token,
           is_active: true,

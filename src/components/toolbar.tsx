@@ -10,7 +10,19 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 
-export function Toolbar({ promptCount, models, tags }: { promptCount: number, models: string[], tags: string[] }) {
+export function Toolbar({ 
+  promptCount, 
+  models, 
+  tags, 
+  basePath = '/',
+  label = 'Prompts'
+}: { 
+  promptCount: number, 
+  models: string[], 
+  tags: string[], 
+  basePath?: string,
+  label?: string
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -26,7 +38,8 @@ export function Toolbar({ promptCount, models, tags }: { promptCount: number, mo
     } else {
       params.set(key, value)
     }
-    router.push(`/?${params.toString()}`)
+    const queryStr = params.toString()
+    router.push(queryStr ? `${basePath}?${queryStr}` : basePath)
   }
 
   return (
@@ -70,6 +83,9 @@ export function Toolbar({ promptCount, models, tags }: { promptCount: number, mo
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem onClick={() => updateParam('sort', 'newest')}>
               Newest first {currentSort === 'newest' && <Check className="w-4 h-4 ml-auto" />}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => updateParam('sort', 'popular')}>
+              Most Popular {currentSort === 'popular' && <Check className="w-4 h-4 ml-auto" />}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => updateParam('sort', 'oldest')}>
               Oldest first {currentSort === 'oldest' && <Check className="w-4 h-4 ml-auto" />}

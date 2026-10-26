@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search, X, ArrowRight } from 'lucide-react'
 
-export function SearchBar() {
+export function SearchBar({ basePath = '/', placeholder = 'Search prompts...', className = '' }: { basePath?: string, placeholder?: string, className?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   
@@ -23,14 +23,16 @@ export function SearchBar() {
     } else {
       params.delete('q')
     }
-    router.push(`/?${params.toString()}`)
+    const queryStr = params.toString()
+    router.push(queryStr ? `${basePath}?${queryStr}` : basePath)
   }
 
   const handleClear = () => {
     setQuery('')
     const params = new URLSearchParams(searchParams.toString())
     params.delete('q')
-    router.push(`/?${params.toString()}`)
+    const queryStr = params.toString()
+    router.push(queryStr ? `${basePath}?${queryStr}` : basePath)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -40,7 +42,7 @@ export function SearchBar() {
   }
 
   return (
-    <div className="relative w-full max-w-md hidden md:block group">
+    <div className={`relative w-full max-w-md group ${className || 'hidden md:block'}`}>
       <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center text-zinc-400 dark:text-zinc-500 group-focus-within:text-blue-500 transition-colors z-10 pointer-events-none">
         <Search size={16} strokeWidth={2.5} />
       </div>
@@ -50,7 +52,7 @@ export function SearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Search prompts..." 
+        placeholder={placeholder} 
         className="w-full bg-white border border-zinc-200 shadow-sm hover:border-zinc-300 dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 rounded-full pl-10 pr-16 py-2.5 text-sm font-sans text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
       />
 

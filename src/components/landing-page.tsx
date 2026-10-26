@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, Sparkles, Box, Share2, UploadCloud, ShieldCheck, ImageIcon } from 'lucide-react'
+import { ArrowRight, Sparkles, Box, Share2, UploadCloud, ShieldCheck, ImageIcon, Compass } from 'lucide-react'
 import Image from 'next/image'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -15,6 +15,10 @@ export function LandingPage() {
             <span className="text-xl font-bold tracking-tight">PromptWalt</span>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
+            <Link href="/explore" className="text-xs md:text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-white/5">
+              <Compass className="w-4 h-4 text-blue-500" />
+              <span>Explore</span>
+            </Link>
             <ThemeToggle />
             <Link href="/login">
               <Button size="sm" className="md:h-10 md:px-4 md:py-2 rounded-full shadow-md shadow-primary/20 hover:shadow-primary/40 transition-all text-xs md:text-sm">
@@ -39,9 +43,14 @@ export function LandingPage() {
             PromptWalt is your personal vault for organizing, categorizing, and sharing your best AI prompts. Built for power users of ChatGPT, Claude, and Midjourney.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/login?mode=signup">
+            <Link href="/login?mode=signup" className="w-full sm:w-auto">
               <Button size="lg" className="rounded-full h-14 px-8 text-lg font-medium shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all w-full sm:w-auto">
                 Get Started for Free <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="/explore" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="rounded-full h-14 px-8 text-lg font-medium border-zinc-200 dark:border-white/10 hover:bg-zinc-100 dark:hover:bg-white/5 transition-all w-full sm:w-auto gap-2">
+                <Compass className="w-5 h-5 text-blue-500" /> Explore Prompts
               </Button>
             </Link>
           </div>

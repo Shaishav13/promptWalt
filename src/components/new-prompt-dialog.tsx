@@ -15,10 +15,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Plus, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { Plus, Image as ImageIcon, Loader2, Lock, Globe } from 'lucide-react'
 import { toast } from 'sonner'
 import { createPrompt } from '@/app/actions'
 import { createClient } from '@/utils/supabase/client'
+import { safeRandomUUID } from '@/utils/uuid'
 
 export function NewPromptDialog({ 
   categories = [],
@@ -34,12 +35,14 @@ export function NewPromptDialog({
   const [fileNames, setFileNames] = useState<string[]>([])
   const [fileError, setFileError] = useState<string | null>(null)
   const [categoryId, setCategoryId] = useState<string>("")
+  const [visibility, setVisibility] = useState<'private' | 'public'>('private')
 
   function handleOpenChange(newOpen: boolean) {
     if (!newOpen) {
       setFileNames([])
       setFileError(null)
       setCategoryId("")
+      setVisibility('private')
     }
     setOpen(newOpen)
   }
@@ -62,7 +65,7 @@ export function NewPromptDialog({
       for (const file of imageFiles) {
         if (file && file.size > 0) {
           const fileExt = file.name.split('.').pop()
-          const fileName = `${crypto.randomUUID()}.${fileExt}`
+          const fileName = `${safeRandomUUID()}.${fileExt}`
           const filePath = `${user.id}/${fileName}`
 
           const { error: uploadError } = await supabase.storage
@@ -79,15 +82,17 @@ export function NewPromptDialog({
       formData.delete('images')
       // Append the paths we just uploaded
       uploadedPaths.forEach(path => formData.append('image_paths', path))
+      formData.set('visibility', visibility)
 
       const res = await createPrompt(formData)
       
       if (res?.error) {
         toast.error(res.error)
       } else {
-        toast.success("Prompt saved!")
+        toast.success(visibility === 'public' ? "Prompt published to Explore!" : "Prompt saved to Vault!")
         setFileNames([])
         setFileError(null)
+        setVisibility('private')
         setOpen(false)
         formElement.reset()
       }
@@ -200,9 +205,49 @@ export function NewPromptDialog({
                 </Select>
               </div>
             </div>
+
             <div className="grid gap-2">
               <Label htmlFor="tags">Tags (Optional)</Label>
               <Input id="tags" name="tags" placeholder="cyberpunk, futuristic" />
+            </div>
+
+            {/* Visibility Selector */}
+            <div className="grid gap-2 pt-1 border-t border-zinc-100 dark:border-white/5">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">Visibility & Explore</Label>
+                <span className="text-[10px] text-zinc-400 font-mono">By default: Private</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 p-1 bg-zinc-100 dark:bg-white/5 rounded-xl border border-zinc-200 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setVisibility('private')}
+                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                    visibility === 'private'
+                      ? 'bg-white dark:bg-[#1a1b23] text-zinc-900 dark:text-white shadow-sm border border-zinc-200/50 dark:border-white/10'
+                      : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                  }`}
+                >
+                  <Lock className={`w-3.5 h-3.5 ${visibility === 'private' ? 'text-amber-500' : ''}`} />
+                  <span>Private</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setVisibility('public')}
+                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                    visibility === 'public'
+                      ? 'bg-white dark:bg-[#1a1b23] text-blue-600 dark:text-blue-400 shadow-sm border border-blue-500/30 font-semibold'
+                      : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                  }`}
+                >
+                  <Globe className={`w-3.5 h-3.5 ${visibility === 'public' ? 'text-blue-500' : ''}`} />
+                  <span>Public in Explore</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-snug">
+                {visibility === 'private'
+                  ? '🔒 Private: Only you can view or use this prompt.'
+                  : '🌐 Public: Anyone in the community can view, copy, and save this prompt on the Explore page.'}
+              </p>
             </div>
           </div>
           <DialogFooter>

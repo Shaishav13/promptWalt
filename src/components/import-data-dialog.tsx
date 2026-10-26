@@ -14,6 +14,7 @@ import { Download, Loader2, Check } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { toast } from 'sonner'
 import { bulkInsertPrompts } from '@/app/actions'
+import { safeRandomUUID } from '@/utils/uuid'
 
 interface ExtractedPrompt {
   id: string
@@ -62,7 +63,7 @@ export function ImportDataDialog() {
                   const text = message.content.parts[0]
                   if (typeof text === 'string' && text.length > 50) {
                     extracted.push({
-                      id: crypto.randomUUID(),
+                      id: safeRandomUUID(),
                       prompt_text: text,
                       title: generateTitle(text),
                       selected: true

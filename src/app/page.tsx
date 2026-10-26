@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { logout } from './actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Search, Plus, Menu, LogOut, Hexagon, User, ChevronDown, Grid, List, ArrowDownUp, Filter, Star } from 'lucide-react'
+import { Search, Plus, Menu, LogOut, Hexagon, User, ChevronDown, Grid, List, ArrowDownUp, Filter, Star, Globe } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 import { NewPromptDialog } from '@/components/new-prompt-dialog'
@@ -230,6 +230,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
                         {prompt.model_used && (
                           <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-100 text-zinc-500 border border-zinc-200 dark:bg-white/5 dark:text-zinc-400 dark:border-white/5 font-medium">
                             {prompt.model_used}
+                          </span>
+                        )}
+                        {prompt.visibility === 'public' && (
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 border border-blue-500/20 dark:text-blue-400 font-medium inline-flex items-center gap-1">
+                            <Globe className="w-2.5 h-2.5" /> Public
                           </span>
                         )}
                       </div>
