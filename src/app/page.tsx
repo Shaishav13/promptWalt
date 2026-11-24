@@ -121,20 +121,20 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         {/* Main Area */}
         <div className="flex flex-1 flex-col overflow-hidden relative">
           {/* Header Bar */}
-          <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-4 sm:px-6 gap-4">
-            <div className="flex items-center gap-4 flex-1">
+          <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-3 sm:px-6 gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               <MobileSidebar activeCategoryId={categoryId} isFavoritesView={favoritesFilter} />
               
-              <SearchBar />
+              <SearchBar className="flex-1 min-w-0 max-w-md" />
             </div>
 
-            <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-              <Link href="/profile" className="flex items-center gap-2 sm:gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 pr-2.5 sm:pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors">
-                <div className="w-6 h-6 rounded-full bg-indigo-500 overflow-hidden shrink-0">
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+              <Link href="/profile" className="flex items-center gap-2 sm:gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 sm:pr-2.5 md:pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors shrink-0">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-indigo-500 overflow-hidden shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[100px] sm:max-w-[120px]">
+                <span className="hidden sm:inline text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[100px] sm:max-w-[120px]">
                   {user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                 </span>
               </Link>
@@ -149,17 +149,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         {/* Opaque App Content Shell */}
         <div className="flex-1 bg-white dark:bg-[#0e0f11] rounded-tl-3xl border-t border-l border-white dark:border-white/5 flex flex-col overflow-y-auto shadow-2xl shadow-slate-200 dark:shadow-2xl">
           {/* Header Section */}
-        <div className="px-6 py-8 pb-4 shrink-0">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="px-4 sm:px-6 py-6 sm:py-8 pb-4 shrink-0">
+          <div className="flex flex-row items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold font-sans tracking-tight text-zinc-900 dark:text-white mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-zinc-900 dark:text-white mb-0.5 sm:mb-1">
                 {favoritesFilter ? 'Favorites' : 'My Prompts'}
               </h1>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
                 {favoritesFilter ? 'Your starred prompts' : 'Prompt Management Dashboard'}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 shrink-0">
               <NewPromptDialog categories={categories || []} />
             </div>
           </div>
@@ -168,7 +168,23 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         </div>
 
         {/* Dynamic View (Grid or List) */}
-        <div className="px-6 pb-6 pt-0">
+        <div className="px-4 sm:px-6 pb-6 pt-0">
+          {searchQuery && (
+            <div className="mb-4 flex items-center justify-between gap-2 px-3.5 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-700 dark:text-blue-300">
+              <div className="flex items-center gap-2 truncate">
+                <Search className="w-3.5 h-3.5 shrink-0 text-blue-500" />
+                <span className="truncate">
+                  Search results for: <strong>&ldquo;{searchQuery}&rdquo;</strong> ({promptsWithUrls.length} {promptsWithUrls.length === 1 ? 'prompt' : 'prompts'} found)
+                </span>
+              </div>
+              <Link 
+                href={categoryId ? `/?category=${categoryId}` : '/'} 
+                className="shrink-0 flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Clear
+              </Link>
+            </div>
+          )}
           {allUserPrompts?.length === 0 ? (
             <EmptyState categories={categories || []} />
           ) : (

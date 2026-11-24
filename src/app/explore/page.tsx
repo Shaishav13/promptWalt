@@ -8,7 +8,7 @@ import { ExploreDetailDialog } from '@/components/explore-detail-dialog'
 import { ExploreCardActions } from '@/components/explore-card-actions'
 import { NewPromptDialog } from '@/components/new-prompt-dialog'
 import { Button } from '@/components/ui/button'
-import { Compass, Sparkles, Globe, User, LogIn, ArrowRight } from 'lucide-react'
+import { Compass, Sparkles, Globe, LogIn, ArrowRight, Search } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -148,28 +148,28 @@ export default async function ExplorePage({
         <div className="flex flex-1 flex-col overflow-hidden relative">
           
           {/* Header Bar */}
-          <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-4 sm:px-6 gap-3 sm:gap-4 border-b border-zinc-200/50 dark:border-white/5">
-            <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+          <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-3 sm:px-6 gap-2 sm:gap-4 border-b border-zinc-200/50 dark:border-white/5">
+            <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
               {user ? (
                 <MobileSidebar activePath="/explore" />
               ) : (
-                <Link href="/" className="flex items-center gap-2 md:hidden">
+                <Link href="/" className="flex items-center gap-2 md:hidden shrink-0">
                   <Image src="/logo.png" alt="PromptWalt" width={24} height={24} className="rounded-md" />
-                  <span className="font-bold text-sm">PromptWalt</span>
+                  <span className="font-bold text-sm hidden xs:inline">PromptWalt</span>
                 </Link>
               )}
               
-              <SearchBar basePath="/explore" placeholder="Search community prompts..." className="w-full max-w-md hidden sm:block" />
+              <SearchBar basePath="/explore" placeholder="Search community prompts..." className="flex-1 min-w-0 max-w-md" />
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {user ? (
-                <Link href="/profile" className="flex items-center gap-2 sm:gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 pr-2.5 sm:pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors">
-                  <div className="w-6 h-6 rounded-full bg-indigo-500 overflow-hidden shrink-0">
+                <Link href="/profile" className="flex items-center gap-2 sm:gap-3 bg-zinc-100 dark:bg-white/5 rounded-full p-1 sm:pr-2.5 md:pr-3 border border-zinc-200 dark:border-white/10 cursor-pointer hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors shrink-0">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-indigo-500 overflow-hidden shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`} alt="Avatar" className="w-full h-full object-cover" />
                   </div>
-                  <span className="text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[90px] sm:max-w-[120px]">
+                  <span className="hidden sm:inline text-xs font-medium font-sans text-zinc-700 dark:text-zinc-300 truncate max-w-[90px] sm:max-w-[120px]">
                     {user.user_metadata?.display_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
                   </span>
                 </Link>
@@ -220,11 +220,6 @@ export default async function ExplorePage({
                 )}
               </div>
 
-              {/* Mobile Search Bar if viewport is small */}
-              <div className="mt-4 sm:hidden">
-                <SearchBar basePath="/explore" placeholder="Search community prompts..." className="w-full block" />
-              </div>
-
               {/* Filter Toolbar */}
               <Toolbar 
                 basePath="/explore" 
@@ -237,6 +232,22 @@ export default async function ExplorePage({
 
             {/* Prompts Feed */}
             <div className="px-4 sm:px-6 pb-12 pt-2">
+              {searchQuery && (
+                <div className="mb-4 flex items-center justify-between gap-2 px-3.5 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-xs text-blue-700 dark:text-blue-300">
+                  <div className="flex items-center gap-2 truncate">
+                    <Search className="w-3.5 h-3.5 shrink-0 text-blue-500" />
+                    <span className="truncate">
+                      Search results for: <strong>&ldquo;{searchQuery}&rdquo;</strong> ({promptsWithUrls.length} {promptsWithUrls.length === 1 ? 'prompt' : 'prompts'} found)
+                    </span>
+                  </div>
+                  <Link 
+                    href="/explore" 
+                    className="shrink-0 flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Clear
+                  </Link>
+                </div>
+              )}
               {promptsWithUrls.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-8 sm:p-16 my-8 rounded-2xl border border-dashed border-zinc-200 dark:border-white/10 bg-zinc-50/50 dark:bg-white/5 text-center max-w-xl mx-auto">
                   <div className="w-14 h-14 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4 border border-blue-500/20">

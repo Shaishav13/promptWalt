@@ -43,8 +43,8 @@ export function Toolbar({
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-8">
-      <div className="flex items-center gap-2">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
+      <div className="hidden md:flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50">
             View <ChevronDown className="w-4 h-4 opacity-50" />
@@ -60,8 +60,8 @@ export function Toolbar({
         </DropdownMenu>
       </div>
       
-      <div className="flex items-center gap-3 w-full md:w-auto">
-        <div className="flex items-center p-0.5 rounded-md bg-zinc-100 border border-zinc-200 dark:bg-white/5 dark:border-white/10">
+      <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+        <div className="flex items-center p-0.5 rounded-md bg-zinc-100 border border-zinc-200 dark:bg-white/5 dark:border-white/10 shrink-0">
           <button 
             onClick={() => updateParam('view', 'grid')}
             className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${currentView === 'grid' ? 'bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
@@ -77,7 +77,7 @@ export function Toolbar({
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50">
+          <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 shrink-0">
             <ArrowDownUp className="w-3.5 h-3.5" /> Sort
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">

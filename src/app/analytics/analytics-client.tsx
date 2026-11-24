@@ -192,31 +192,31 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 py-6 space-y-8 max-w-7xl mx-auto w-full">
+    <div className="flex-1 overflow-y-auto px-3 sm:px-6 md:px-8 py-4 sm:py-6 space-y-6 sm:space-y-8 max-w-7xl mx-auto w-full">
       {/* Top Welcome & Summary Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-white/5 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-white/5 pb-4 sm:pb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
             Analytics & Insights
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
             Track your prompt usage, monitor public links, and safeguard your shared prompts.
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           <Button 
             onClick={() => setIsViewModalOpen(true)}
-            className="rounded-full shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-0"
+            className="w-full sm:w-auto rounded-full shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border-0 text-xs sm:text-sm h-9 sm:h-10"
           >
-            <Share2 className="w-4 h-4 mr-2" />
+            <Share2 className="w-4 h-4 mr-2 shrink-0" />
             Manage Shared Links ({activeShares.length} Active)
           </Button>
         </div>
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Total Prompt Uses */}
         <div className="relative overflow-hidden rounded-2xl p-5 bg-white dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-white/5 shadow-sm hover:shadow-md transition-all group">
           <div className="flex items-center justify-between mb-3">
@@ -311,12 +311,12 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Link Shared Graph & View Option Card (2 Columns on Desktop) */}
-        <div className="lg:col-span-2 rounded-2xl p-6 bg-white dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-white/5 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-2 rounded-2xl p-4 sm:p-6 bg-white dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-white/5 shadow-sm flex flex-col justify-between">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
                     Link Sharing & Views Breakdown
                   </h2>
                   <Badge variant="secondary" className="text-xs rounded-full">
@@ -573,12 +573,12 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
       {/* View Shared Prompts & Revocation Modal (Explicit User Request) */}
       {/* ========================================================= */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="sm:max-w-3xl w-[95vw] max-h-[85vh] p-0 flex flex-col overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 shadow-2xl">
-          <DialogHeader className="p-6 pb-4 border-b border-zinc-100 dark:border-white/5 shrink-0">
-            <div className="flex items-center justify-between gap-4">
+        <DialogContent className="w-[95vw] sm:max-w-3xl max-h-[85vh] p-0 flex flex-col overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-white/10 shadow-2xl rounded-2xl">
+          <DialogHeader className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-zinc-100 dark:border-white/5 shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pr-6 sm:pr-0">
               <div>
-                <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                  <Share2 className="w-5 h-5 text-blue-500" />
+                <DialogTitle className="text-lg sm:text-xl font-bold flex items-center gap-2">
+                  <Share2 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 shrink-0" />
                   <span>Shared Prompts & Access Control</span>
                 </DialogTitle>
                 <DialogDescription className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
@@ -587,22 +587,22 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
               </div>
 
               {/* Filter Tabs */}
-              <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl shrink-0">
+              <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl w-full sm:w-auto overflow-x-auto shrink-0 justify-between sm:justify-start">
                 <button
                   onClick={() => setShareFilter('all')}
-                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium ${shareFilter === 'all' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
+                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium flex-1 sm:flex-initial text-center ${shareFilter === 'all' ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
                 >
                   All ({enrichedShares.length})
                 </button>
                 <button
                   onClick={() => setShareFilter('active')}
-                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium ${shareFilter === 'active' ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
+                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium flex-1 sm:flex-initial text-center ${shareFilter === 'active' ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
                 >
                   Active ({activeShares.length})
                 </button>
                 <button
                   onClick={() => setShareFilter('revoked')}
-                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium ${shareFilter === 'revoked' ? 'bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
+                  className={`text-xs px-2.5 py-1 rounded-lg transition-all font-medium flex-1 sm:flex-initial text-center ${shareFilter === 'revoked' ? 'bg-white dark:bg-zinc-800 text-rose-600 dark:text-rose-400 shadow-xs' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-white'}`}
                 >
                   Revoked ({revokedShares.length})
                 </button>
@@ -611,9 +611,9 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
           </DialogHeader>
 
           {/* Modal Content Scroll Area */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3.5 sm:space-y-4">
             {/* IP Protection Notice */}
-            <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-500/20 flex items-start gap-3 text-xs text-blue-900 dark:text-blue-300">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-500/20 flex items-start gap-2.5 sm:gap-3 text-xs text-blue-900 dark:text-blue-300">
               <ShieldAlert className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold">Monetization & Piracy Protection:</span> Disabling an active link immediately turns it into a revoked dead-end (404 / inactive) so unauthorized parties cannot steal or scrape your prompt text. If you decide to share again later, a brand new secure URL will be generated.
@@ -625,33 +625,33 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                 No {shareFilter !== 'all' ? shareFilter : ''} shared prompts found.
               </div>
             ) : (
-              <div className="space-y-3.5">
+              <div className="space-y-3">
                 {filteredShares.map((share) => {
                   const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/share/${share.share_token}`
 
                   return (
                     <div 
                       key={share.id}
-                      className="p-4 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-white/20 transition-all flex flex-col gap-3"
+                      className="p-3 sm:p-4 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50/40 dark:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-white/20 transition-all flex flex-col gap-2.5 sm:gap-3"
                     >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-sm text-zinc-900 dark:text-white truncate">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                            <h4 className="font-semibold text-xs sm:text-sm text-zinc-900 dark:text-white truncate max-w-full">
                               {share.promptTitle}
                             </h4>
                             {share.isActive ? (
-                              <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px]">
+                              <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-[10px] shrink-0">
                                 Active Link
                               </Badge>
                             ) : (
-                              <Badge variant="destructive" className="text-[10px]">
+                              <Badge variant="destructive" className="text-[10px] shrink-0">
                                 Revoked / Disabled
                               </Badge>
                             )}
                           </div>
                           
-                          <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                             <span>Model: {share.modelUsed}</span>
                             {share.categoryName && (
                               <>
@@ -668,7 +668,7 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                         </div>
 
                         {/* Action buttons */}
-                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto pt-0.5 sm:pt-0">
                           {share.isActive ? (
                             <Button
                               size="sm"
@@ -696,8 +696,8 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                       </div>
 
                       {/* URL Box & Copy Actions */}
-                      <div className="flex items-center gap-2 bg-white dark:bg-black/40 border border-zinc-200 dark:border-white/5 rounded-lg p-1.5 pl-3 text-xs">
-                        <span className="font-mono text-zinc-500 dark:text-zinc-400 truncate flex-1 select-all">
+                      <div className="flex items-center gap-1.5 sm:gap-2 bg-white dark:bg-black/40 border border-zinc-200 dark:border-white/5 rounded-lg p-1.5 pl-2.5 sm:pl-3 text-xs min-w-0">
+                        <span className="font-mono text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 truncate flex-1 select-all min-w-0">
                           {shareUrl}
                         </span>
 
@@ -705,7 +705,7 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                           size="sm"
                           variant="ghost"
                           onClick={() => handleCopyLink(share.share_token)}
-                          className="h-7 px-2.5 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white"
+                          className="h-7 px-2 sm:px-2.5 text-xs text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white shrink-0"
                           title="Copy Link"
                         >
                           {copiedToken === share.share_token ? (
@@ -713,7 +713,7 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                           ) : (
                             <Copy className="w-3.5 h-3.5" />
                           )}
-                          <span className="ml-1.5 hidden sm:inline">
+                          <span className="ml-1 sm:ml-1.5 hidden xs:inline sm:inline">
                             {copiedToken === share.share_token ? 'Copied' : 'Copy'}
                           </span>
                         </Button>
@@ -723,6 +723,7 @@ export function AnalyticsClient({ prompts, categories, initialShares }: Analytic
                             href={`/share/${share.share_token}`} 
                             target="_blank"
                             rel="noopener noreferrer"
+                            className="shrink-0"
                           >
                             <Button
                               size="sm"

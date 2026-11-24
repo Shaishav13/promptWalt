@@ -35,7 +35,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
       <div className="min-h-screen bg-slate-50 dark:bg-[#090a0f] flex flex-col items-center justify-center p-6 text-center font-sans">
         <div className="max-w-md w-full bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-white/10 shadow-2xl backdrop-blur-xl">
           <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 dark:bg-amber-400/10 dark:text-amber-400 flex items-center justify-center mx-auto mb-4 border border-amber-500/20">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
           </div>
           <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">Share Link Revoked</h2>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
@@ -53,8 +53,23 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
   // Increment view count safely
   try {
-    await supabase.rpc('increment_share_view', { token })
-  } catch {}
+    const { error: rpcError } = await supabase.rpc('increment_share_view', { token })
+    if (rpcError && shareData.id) {
+      // Direct update fallback if RPC hasn't been run or encountered schema issue
+      await supabase
+        .from('shares')
+        .update({
+          view_count: ((shareData as any).view_count || 0) + 1,
+          last_viewed_at: new Date().toISOString()
+        })
+        .eq('id', shareData.id)
+    }
+
+    const { revalidatePath } = await import('next/cache')
+    revalidatePath('/analytics')
+  } catch (err) {
+    console.error('Failed to increment view count:', err)
+  }
 
   // 2. Fetch the prompt (bypassing RLS or relying on visibility = 'shared'/'public')
   const { data: prompt, error: promptError } = await supabase
@@ -69,7 +84,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
 
   // Fetch public URLs for images if allowed
   const includeImages = !token.endsWith('-noimg')
-  let signedUrls: string[] = []
+  const signedUrls: string[] = []
   if (includeImages && prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
     for (const url of prompt.demo_image_urls) {
       const { data } = supabase.storage.from('prompt-images').getPublicUrl(url)
@@ -80,7 +95,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center py-12 px-4">
       <div className="w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800">
-        
+
         {/* Header */}
         <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
           <div>
@@ -121,16 +136,16 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
           {/* Images */}
           <div className="w-full md:w-1/2 bg-zinc-100 dark:bg-zinc-950 relative border-r border-zinc-100 dark:border-zinc-800 md:overflow-y-auto">
             {signedUrls.length > 0 ? (
-                <div className="flex flex-col">
-                  {signedUrls.map((url, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img key={i} src={url} alt={`${prompt.title} ${i+1}`} className="w-full h-auto object-cover" />
-                  ))}
-                </div>
+              <div className="flex flex-col">
+                {signedUrls.map((url, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={i} src={url} alt={`${prompt.title} ${i + 1}`} className="w-full h-auto object-cover" />
+                ))}
+              </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center p-8 text-zinc-400 text-sm">
-                {!includeImages && prompt.demo_image_urls?.length > 0 
-                  ? 'Demo image not shared' 
+                {!includeImages && prompt.demo_image_urls?.length > 0
+                  ? 'Demo image not shared'
                   : 'No demo images attached to this prompt'}
               </div>
             )}
@@ -139,30 +154,30 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
           {/* Details */}
           <div className="w-full md:w-1/2 flex flex-col bg-white dark:bg-zinc-900 md:overflow-y-auto">
             <div className="p-6 space-y-6">
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-sm font-semibold">Prompt</h4>
-                    <PublicCopyButton text={prompt.prompt_text} />
-                  </div>
-                  <div className="relative group/copy">
-                    <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap font-mono">
-                      {prompt.prompt_text}
-                    </div>
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-semibold">Prompt</h4>
+                  <PublicCopyButton text={prompt.prompt_text} />
+                </div>
+                <div className="relative group/copy">
+                  <div className="p-5 bg-zinc-50 dark:bg-zinc-950 rounded-xl text-sm leading-relaxed border border-zinc-100 dark:border-zinc-800 whitespace-pre-wrap font-mono">
+                    {prompt.prompt_text}
                   </div>
                 </div>
+              </div>
 
-                {prompt.tags && prompt.tags.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold mb-2">Tags</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {prompt.tags.map((tag: string) => (
-                        <span key={tag} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+              {prompt.tags && prompt.tags.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-semibold mb-2">Tags</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {prompt.tags.map((tag: string) => (
+                      <span key={tag} className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
             </div>
           </div>
         </div>

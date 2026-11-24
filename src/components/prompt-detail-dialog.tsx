@@ -456,38 +456,38 @@ export function PromptDetailDialog({ children, prompt, categories = [] }: Prompt
     
     {/* Secondary Dialog for Share Options */}
     <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-      <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-950 p-6">
+      <DialogContent className="w-[92vw] max-w-md bg-white dark:bg-zinc-950 p-4 sm:p-6 rounded-2xl overflow-hidden">
         <DialogHeader className="mb-4">
-          <DialogTitle className="text-xl text-center">Share Prompt</DialogTitle>
-          <DialogDescription className="text-center pt-2">
+          <DialogTitle className="text-lg sm:text-xl text-center">Share Prompt</DialogTitle>
+          <DialogDescription className="text-center pt-1 sm:pt-2 text-xs sm:text-sm">
             This prompt contains a demo image. Would you like to include it in the public share link?
           </DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col gap-3">
           <Button 
-            className="w-full h-12 justify-start px-6 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800" 
+            className="w-full h-auto min-h-12 justify-start px-3.5 sm:px-4 py-2.5 sm:py-3 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800 whitespace-normal text-left" 
             variant="outline" 
             onClick={() => handleShare(true)}
             disabled={isSharing}
           >
-            {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
-            <div className="flex flex-col items-start text-left">
-              <span className="font-semibold text-sm leading-tight">Share with image</span>
-              <span className="text-[10px] text-zinc-500 font-normal">Viewers will see your prompt and the demo image</span>
+            {isSharing ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : <Share className="h-4 w-4 shrink-0" />}
+            <div className="flex flex-col items-start text-left min-w-0 flex-1">
+              <span className="font-semibold text-xs sm:text-sm leading-tight">Share with image</span>
+              <span className="text-[10px] sm:text-xs text-zinc-500 font-normal leading-snug">Viewers will see your prompt and the demo image</span>
             </div>
           </Button>
           
           <Button 
-            className="w-full h-12 justify-start px-6 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800" 
+            className="w-full h-auto min-h-12 justify-start px-3.5 sm:px-4 py-2.5 sm:py-3 gap-3 shadow-sm border border-zinc-200 dark:border-zinc-800 whitespace-normal text-left" 
             variant="outline" 
             onClick={() => handleShare(false)}
             disabled={isSharing}
           >
-            {isSharing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Share className="h-4 w-4" />}
-            <div className="flex flex-col items-start text-left">
-              <span className="font-semibold text-sm leading-tight">Share text only</span>
-              <span className="text-[10px] text-zinc-500 font-normal">Viewers will only see the text of your prompt</span>
+            {isSharing ? <Loader2 className="h-4 w-4 shrink-0 animate-spin" /> : <Share className="h-4 w-4 shrink-0" />}
+            <div className="flex flex-col items-start text-left min-w-0 flex-1">
+              <span className="font-semibold text-xs sm:text-sm leading-tight">Share text only</span>
+              <span className="text-[10px] sm:text-xs text-zinc-500 font-normal leading-snug">Viewers will only see the text of your prompt</span>
             </div>
           </Button>
         </div>
