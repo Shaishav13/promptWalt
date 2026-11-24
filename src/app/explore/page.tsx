@@ -14,10 +14,10 @@ import Image from 'next/image'
 
 export const dynamic = 'force-dynamic'
 
-export default async function ExplorePage({ 
-  searchParams 
-}: { 
-  searchParams: Promise<{ q?: string, model?: string, tag?: string, view?: string, sort?: string }> 
+export default async function ExplorePage({
+  searchParams
+}: {
+  searchParams: Promise<{ q?: string, model?: string, tag?: string, view?: string, sort?: string }>
 }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -146,7 +146,7 @@ export default async function ExplorePage({
 
         {/* Main Content Area */}
         <div className="flex flex-1 flex-col overflow-hidden relative">
-          
+
           {/* Header Bar */}
           <header className="flex h-16 md:h-20 items-center justify-between shrink-0 bg-transparent px-3 sm:px-6 gap-2 sm:gap-4 border-b border-zinc-200/50 dark:border-white/5">
             <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
@@ -158,7 +158,7 @@ export default async function ExplorePage({
                   <span className="font-bold text-sm hidden xs:inline">PromptWalt</span>
                 </Link>
               )}
-              
+
               <SearchBar basePath="/explore" placeholder="Search community prompts..." className="flex-1 min-w-0 max-w-md" />
             </div>
 
@@ -193,7 +193,7 @@ export default async function ExplorePage({
 
           {/* Opaque App Content Shell */}
           <div className="flex-1 bg-white dark:bg-[#0e0f11] rounded-tl-3xl border-t border-l border-white dark:border-white/5 flex flex-col overflow-y-auto shadow-2xl shadow-slate-200 dark:shadow-2xl">
-            
+
             {/* Header Section */}
             <div className="px-4 sm:px-6 py-6 sm:py-8 pb-4 shrink-0">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -211,9 +211,9 @@ export default async function ExplorePage({
 
                 {user && (
                   <div className="flex items-center gap-3">
-                    <NewPromptDialog 
-                      categories={categories} 
-                      triggerText="Post a Prompt" 
+                    <NewPromptDialog
+                      categories={categories}
+                      triggerText="Post a Prompt"
                       triggerClassName="inline-flex items-center justify-center rounded-full text-xs sm:text-sm font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 gap-2"
                     />
                   </div>
@@ -221,10 +221,10 @@ export default async function ExplorePage({
               </div>
 
               {/* Filter Toolbar */}
-              <Toolbar 
-                basePath="/explore" 
-                promptCount={promptsWithUrls.length} 
-                models={allModels} 
+              <Toolbar
+                basePath="/explore"
+                promptCount={promptsWithUrls.length}
+                models={allModels}
                 tags={allTags}
                 label="Public Prompts"
               />
@@ -240,8 +240,8 @@ export default async function ExplorePage({
                       Search results for: <strong>&ldquo;{searchQuery}&rdquo;</strong> ({promptsWithUrls.length} {promptsWithUrls.length === 1 ? 'prompt' : 'prompts'} found)
                     </span>
                   </div>
-                  <Link 
-                    href="/explore" 
+                  <Link
+                    href="/explore"
                     className="shrink-0 flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Clear
@@ -257,14 +257,14 @@ export default async function ExplorePage({
                     {searchQuery || modelFilter || tagFilter ? 'No matching community prompts' : 'No public prompts yet'}
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
-                    {searchQuery || modelFilter || tagFilter 
+                    {searchQuery || modelFilter || tagFilter
                       ? 'Try clearing your search query or filters to discover more prompts.'
                       : 'Be the first creator to share a prompt with the community! By default, prompts stay private in your vault until you choose to publish them.'}
                   </p>
 
                   {user ? (
-                    <NewPromptDialog 
-                      categories={categories} 
+                    <NewPromptDialog
+                      categories={categories}
                       triggerText="Publish First Prompt"
                       triggerClassName="inline-flex items-center justify-center rounded-full text-sm font-medium transition-colors bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90 h-10 px-6 gap-2"
                     />
@@ -285,16 +285,16 @@ export default async function ExplorePage({
                     return (
                       <ExploreDetailDialog key={prompt.id} prompt={prompt} isLoggedIn={!!user}>
                         <div className={`bg-white border border-zinc-200 dark:bg-[#1a1b1e] dark:border-white/5 rounded-xl flex hover:border-zinc-300 dark:hover:border-white/20 hover:shadow-md transition-all group overflow-hidden h-full text-left shadow-sm dark:shadow-none cursor-pointer ${viewMode === 'list' ? 'flex-row items-stretch' : 'flex-col'}`}>
-                          
+
                           {/* Image Thumbnail or Code Syntax Box */}
                           <div className={`${viewMode === 'list' ? 'w-48 sm:w-64 p-3 pr-0 shrink-0 flex flex-col' : 'p-3 pb-0'}`}>
                             {prompt.signedUrls && prompt.signedUrls.length > 0 ? (
                               <div className={`${viewMode === 'list' ? 'h-full w-full' : 'aspect-[4/3]'} rounded-lg overflow-hidden relative bg-zinc-100 dark:bg-zinc-900`}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img 
-                                  src={prompt.signedUrls[0]} 
-                                  alt={prompt.title || 'Prompt thumbnail'} 
-                                  className="h-full w-full object-cover transition-transform group-hover:scale-105 duration-300 absolute inset-0" 
+                                <img
+                                  src={prompt.signedUrls[0]}
+                                  alt={prompt.title || 'Prompt thumbnail'}
+                                  className="h-full w-full object-cover transition-transform group-hover:scale-105 duration-300 absolute inset-0"
                                 />
                                 {prompt.signedUrls.length > 1 && (
                                   <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded z-10 backdrop-blur-sm">
@@ -317,7 +317,7 @@ export default async function ExplorePage({
 
                           {/* Details & Actions */}
                           <div className="p-4 flex-1 flex flex-col min-w-0">
-                            
+
                             {/* Author & Model header */}
                             <div className="flex items-center justify-between gap-2 mb-2">
                               <div className="flex items-center gap-1.5 min-w-0">
@@ -369,10 +369,10 @@ export default async function ExplorePage({
                                 {new Date(prompt.created_at).toLocaleDateString()}
                               </span>
 
-                              <ExploreCardActions 
-                                promptId={prompt.id} 
-                                promptText={prompt.prompt_text} 
-                                title={prompt.title || 'Prompt'} 
+                              <ExploreCardActions
+                                promptId={prompt.id}
+                                promptText={prompt.prompt_text}
+                                title={prompt.title || 'Prompt'}
                                 isLoggedIn={!!user}
                               />
                             </div>
