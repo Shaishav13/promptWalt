@@ -1,7 +1,9 @@
 'use client'
 
+import { useTransition } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Grid, List, ArrowDownUp, Filter, ChevronDown, Check } from 'lucide-react'
+import { Grid, List, ArrowDownUp, Filter, ChevronDown, Check, Loader2 } from 'lucide-react'
+import { startNavigationProgress } from '@/components/top-progress-bar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +27,7 @@ export function Toolbar({
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
   const currentView = searchParams.get('view') || 'grid'
   const currentSort = searchParams.get('sort') || 'newest'
@@ -32,6 +35,7 @@ export function Toolbar({
   const currentTag = searchParams.get('tag') || 'all'
 
   const updateParam = (key: string, value: string) => {
+    if (isPending) return
     const params = new URLSearchParams(searchParams.toString())
     if (value === 'all' || value === 'grid' && key === 'view' || value === 'newest' && key === 'sort') {
       params.delete(key)
@@ -39,14 +43,20 @@ export function Toolbar({
       params.set(key, value)
     }
     const queryStr = params.toString()
-    router.push(queryStr ? `${basePath}?${queryStr}` : basePath)
+    startNavigationProgress()
+    startTransition(() => {
+      router.push(queryStr ? `${basePath}?${queryStr}` : basePath)
+    })
   }
 
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
       <div className="hidden md:flex items-center gap-2">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50">
+          <DropdownMenuTrigger 
+            disabled={isPending}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-sm font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 disabled:opacity-50"
+          >
             View <ChevronDown className="w-4 h-4 opacity-50" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
@@ -58,26 +68,45 @@ export function Toolbar({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {isPending && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium animate-pulse">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            <span>Updating...</span>
+          </div>
+        )}
       </div>
       
       <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+        {isPending && (
+          <div className="flex md:hidden items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium animate-pulse shrink-0">
+            <Loader2 className="w-3 h-3 animate-spin" />
+            <span>Updating...</span>
+          </div>
+        )}
+
         <div className="flex items-center p-0.5 rounded-md bg-zinc-100 border border-zinc-200 dark:bg-white/5 dark:border-white/10 shrink-0">
           <button 
+            disabled={isPending}
             onClick={() => updateParam('view', 'grid')}
-            className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${currentView === 'grid' ? 'bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
+            className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors disabled:opacity-60 ${currentView === 'grid' ? 'bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
           >
             <Grid className="w-3.5 h-3.5" /> Grid
           </button>
           <button 
+            disabled={isPending}
             onClick={() => updateParam('view', 'list')}
-            className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors ${currentView === 'list' ? 'bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
+            className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors disabled:opacity-60 ${currentView === 'list' ? 'bg-white dark:bg-white/10 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white'}`}
           >
             <List className="w-3.5 h-3.5" /> List
           </button>
         </div>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 shrink-0">
+          <DropdownMenuTrigger 
+            disabled={isPending}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 shrink-0 disabled:opacity-50"
+          >
             <ArrowDownUp className="w-3.5 h-3.5" /> Sort
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
@@ -97,7 +126,10 @@ export function Toolbar({
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50">
+          <DropdownMenuTrigger 
+            disabled={isPending}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-zinc-200 text-xs font-medium text-zinc-700 hover:text-zinc-900 dark:bg-white/5 dark:border-white/10 dark:text-zinc-300 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 disabled:opacity-50"
+          >
             <Filter className="w-3.5 h-3.5" /> Filter
             {(currentModel !== 'all' || currentTag !== 'all') && (
               <span className="w-2 h-2 rounded-full bg-primary ml-1"></span>
@@ -127,7 +159,7 @@ export function Toolbar({
         </DropdownMenu>
 
         <div className="text-xs text-zinc-500 font-medium ml-2 border-l border-zinc-200 dark:border-white/10 pl-4 hidden md:block">
-          {promptCount} Prompts
+          {promptCount} {label}
         </div>
       </div>
     </div>

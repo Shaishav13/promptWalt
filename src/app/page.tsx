@@ -98,8 +98,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
   const allModels = Array.from(uniqueModels).sort()
   const allTags = Array.from(uniqueTags).sort()
 
-  const promptsWithUrls = await Promise.all((prompts || []).map(async (prompt) => {
-    let signedUrls: string[] = []
+  const promptsWithUrls = (prompts || []).map((prompt) => {
+    const signedUrls: string[] = []
     if (prompt.demo_image_urls && prompt.demo_image_urls.length > 0) {
       for (const url of prompt.demo_image_urls) {
         const { data } = supabase.storage.from('prompt-images').getPublicUrl(url)
@@ -107,7 +107,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
       }
     }
     return { ...prompt, signedUrls }
-  }))
+  })
 
   return (
     <div className="flex h-screen overflow-hidden text-zinc-900 font-sans bg-slate-100 dark:text-zinc-100 dark:bg-[#090a0f] relative">
