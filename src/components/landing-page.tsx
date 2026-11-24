@@ -141,6 +141,9 @@ export function LandingPage() {
             <Link href="/privacy-policy" className="text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 transition-colors">
               Privacy Policy
             </Link>
+            <Link href="/terms" className="text-sm font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 transition-colors">
+              Terms &amp; Conditions
+            </Link>
             <div className="text-sm text-zinc-500 flex items-center gap-2 border-t md:border-t-0 md:border-l border-zinc-200 dark:border-zinc-800 pt-4 md:pt-0 md:pl-6">
               <ShieldCheck className="w-4 h-4" /> Private by default
             </div>
